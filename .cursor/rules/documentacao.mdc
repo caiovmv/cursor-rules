@@ -1,0 +1,396 @@
+---
+description: "Governança da documentação técnica: padrões UML, ADRs e estrutura obrigatória"
+alwaysApply: false
+globs: ["**/docs/**", "**/*.md"]
+---
+
+# Governança da Documentação Técnica
+
+## Introdução
+
+### Propósito
+
+Este documento estabelece os padrões, regras e estruturas obrigatórias para a criação, organização e manutenção da documentação técnica do projeto. Ele serve como guia definitivo para garantir consistência, qualidade e utilidade prática da documentação arquitetural e de design.
+
+### Público-Alvo
+
+Este documento é destinado a:
+- Arquitetos de software e engenheiros de design
+- Desenvolvedores que criam ou atualizam documentação
+- Líderes técnicos responsáveis pela governança do projeto
+- Novos membros da equipe que precisam entender a estrutura do projeto
+
+### Importância da Documentação
+
+A documentação técnica bem estruturada é fundamental para:
+- **Rastreabilidade**: Registrar decisões arquiteturais e suas justificativas
+- **Onboarding**: Facilitar a integração de novos membros da equipe
+- **Manutenibilidade**: Reduzir a curva de aprendizado para modificações futuras
+- **Comunicação**: Alinhar expectativas entre stakeholders técnicos e não-técnicos
+- **Evolução**: Permitir avaliação crítica de decisões passadas
+
+> **Nota**: Este documento assume que você é um assistente de documentação técnica responsável por manter e evoluir a documentação do projeto.
+
+---
+
+## Governança da Documentação
+
+### Estrutura de Pastas
+
+Toda a documentação **DEVE** estar localizada na pasta `/docs` na raiz do projeto.
+
+```
+projeto/
+├── docs/
+│   ├── README.md                    # Índice mestre obrigatório
+│   ├── adr/                         # Architecture Decision Records
+│   │   ├── adr-001-exemplo.md
+│   │   └── adr-002-exemplo.md
+│   ├── diagram-class-domain.md      # Diagramas UML
+│   ├── diagram-sequence-checkout.md
+│   └── diagram-component-architecture.md
+└── ...
+```
+
+### Padrões UML 2.0
+
+A documentação **DEVE** seguir os conceitos e padrões da **UML 2.0** (Unified Modeling Language 2.0). Isso significa:
+
+- Utilizar os elementos e relacionamentos definidos no padrão UML 2.0
+- Respeitar a semântica dos diagramas (Classes, Sequência, Componentes, Estados, etc.)
+- Manter consistência na representação de elementos entre diferentes diagramas
+- Seguir as convenções de notação estabelecidas pelo padrão
+
+### Organização de Arquivos
+
+- Cada diagrama UML **DEVE** existir em um arquivo independente dentro da pasta `/docs`
+- Os arquivos de documentação **DEVEM** utilizar Markdown (`.md`)
+- Os nomes dos arquivos **DEVEM** refletir claramente o tipo e o escopo do conteúdo
+
+### Nomenclatura de Arquivos
+
+Os arquivos de diagramas **DEVEM** seguir o padrão:
+
+```
+diagram-<tipo>-<tema>.md
+```
+
+Onde:
+- `<tipo>`: Tipo do diagrama UML (class, sequence, component, state, usecase, etc.)
+- `<tema>`: Tema ou domínio do diagrama (em kebab-case)
+
+**Exemplos válidos:**
+
+```
+diagram-class-domain.md
+diagram-sequence-checkout.md
+diagram-component-architecture.md
+diagram-state-payment.md
+diagram-usecase-authentication.md
+```
+
+---
+
+## Índice Mestre Obrigatório
+
+### Requisitos
+
+- **DEVE** existir um arquivo `/docs/README.md` que funcione como índice mestre da documentação
+- O `/docs/README.md` **DEVE** listar todos os diagramas e documentos existentes
+- O índice **DEVE** agrupar os itens por tipo (Diagramas de Classe, Sequência, Componentes, Casos de Uso, ADRs, etc.)
+- Todo novo documento criado, removido ou renomeado **DEVE** atualizar imediatamente o `/docs/README.md`
+
+---
+
+## Padrão Obrigatório para Diagramas UML
+
+Todo arquivo de diagrama UML **DEVE** seguir rigorosamente a estrutura abaixo, **nesta ordem exata**:
+
+### 1. Título
+
+A primeira linha **DEVE** ser:
+
+```markdown
+# Diagrama de <Tipo UML> – <Nome>
+```
+
+**Exemplos:**
+- `# Diagrama de Classe – Domínio`
+- `# Diagrama de Sequência – Processo de Checkout`
+- `# Diagrama de Componentes – Arquitetura do Sistema`
+
+### 2. Diagrama (Mermaid — Obrigatório)
+
+- Todo diagrama **DEVE** ser escrito exclusivamente em **Mermaid**
+- O bloco Mermaid **DEVE** ser válido e renderizável
+- O tipo de diagrama Mermaid **DEVE** ser compatível com o tipo UML:
+  - `classDiagram` para Diagramas de Classe
+  - `sequenceDiagram` para Diagramas de Sequência
+  - `stateDiagram-v2` para Diagramas de Estados
+  - `graph` ou `flowchart` para Diagramas de Componentes
+
+### 3. Leitura Humana (Obrigatória)
+
+Após o diagrama, **DEVE** existir a seção:
+
+```markdown
+## Leitura Humana
+```
+
+Esta seção **DEVE** explicar o diagrama em linguagem natural, de forma clara e objetiva, incluindo:
+
+- **Elementos principais**: Quais são as entidades, classes, componentes ou atores representados
+- **Responsabilidades**: O que cada elemento faz ou representa
+- **Relações relevantes**: Como os elementos se relacionam entre si
+- **Intenção arquitetural ou fluxo representado**: O propósito do diagrama e o que ele comunica sobre o sistema
+
+O texto **DEVE** ser compreensível para alguém novo no projeto, evitando jargões técnicos desnecessários.
+
+### 4. Observações Críticas (Obrigatórias)
+
+Após a Leitura Humana, **DEVE** existir a seção:
+
+```markdown
+## Observações Críticas
+```
+
+Esta seção **DEVE** ser **analítica e opinativa**, não apenas descritiva. Ela deve incluir:
+
+- **Riscos arquiteturais**: Pontos que podem causar problemas futuros
+- **Acoplamentos excessivos**: Dependências que podem dificultar manutenção
+- **Impactos em manutenção, testes e escalabilidade**: Como a arquitetura representada afeta essas dimensões
+- **Alternativas de modelagem**: Quando aplicável, mencionar outras formas de modelar o mesmo conceito
+- **Pontos que merecem revisão futura**: Aspectos que podem precisar de refatoração ou reconsideração
+
+Esta seção é essencial para documentar não apenas o "o quê", mas também o "por quê" e o "e se".
+
+---
+
+## ADR — Architecture Decision Record
+
+### O que é um ADR?
+
+Um **ADR (Architecture Decision Record)** é um registro formal, enxuto e durável de uma decisão arquitetural relevante tomada durante a avaliação ou evolução do sistema.
+
+> **Filosofia**: Código muda. Pessoas saem. ADR fica.
+
+ADRs capturam o contexto, a decisão tomada e suas consequências, permitindo que equipes futuras compreendam o "por quê" por trás das escolhas arquiteturais, não apenas o "o quê".
+
+### Quando Criar um ADR?
+
+Crie um ADR quando a decisão:
+
+- **Afeta a estrutura do sistema**: Escolha de frameworks, padrões arquiteturais, tecnologias core
+- **Tem impacto de longo prazo**: Decisões difíceis de reverter ou que afetam múltiplas partes do sistema
+- **Envolve trade-offs significativos**: Quando há múltiplas alternativas viáveis com diferentes prós e contras
+- **Pode ser questionada no futuro**: Decisões que podem parecer estranhas sem contexto
+- **Afecta múltiplas equipes ou stakeholders**: Decisões que impactam outras áreas do projeto
+
+**Não crie ADRs para:**
+- Decisões triviais ou óbvias
+- Escolhas temporárias ou experimentais
+- Decisões que são facilmente revertidas
+
+### Governança de ADR
+
+- Todos os ADRs **DEVEM** estar localizados na pasta `/docs/adr`
+- Cada ADR **DEVE** ser um arquivo Markdown (`.md`) independente
+- Os arquivos **DEVEM** seguir o padrão de nomenclatura: `adr-<numero>-<titulo-curto>.md`
+- Os ADRs **DEVEM** ser listados e linkados no `/docs/README.md`, em uma seção específica de ADRs
+
+**Exemplos de nomenclatura:**
+
+```
+adr-001-escolha-banco-dados.md
+adr-002-arquitetura-event-driven.md
+adr-003-autenticacao-jwt.md
+adr-004-escolha-framework-frontend.md
+```
+
+### Estrutura Obrigatória de um ADR
+
+Todo ADR **DEVE** seguir rigorosamente esta estrutura, nesta ordem:
+
+#### 1. Título
+
+A primeira linha **DEVE** ser:
+
+```markdown
+# ADR <Número> – <Título>
+```
+
+**Exemplo:** `# ADR 001 – Escolha do Banco de Dados`
+
+#### 2. Status
+
+```markdown
+## Status
+
+<Status>
+```
+
+O status **DEVE** ser um dos seguintes:
+
+| Status | Descrição |
+|--------|-----------|
+| **Proposto** | ADR em discussão, ainda não aprovado |
+| **Aceito** | Decisão aprovada e implementada |
+| **Depreciado** | Decisão foi descontinuada, mas mantida por histórico |
+| **Substituído** | Decisão foi substituída por outro ADR (deve referenciar o novo ADR) |
+
+#### 3. Contexto
+
+```markdown
+## Contexto
+
+[Descrição do problema, restrições, forças técnicas e organizacionais que motivaram a decisão]
+```
+
+Esta seção deve responder: **Por que precisamos tomar esta decisão?**
+
+#### 4. Decisão
+
+```markdown
+## Decisão
+
+[Declaração objetiva e clara da decisão tomada]
+```
+
+Esta seção deve responder: **O que decidimos fazer?**
+
+#### 5. Consequências
+
+```markdown
+## Consequências
+
+[Impactos positivos e negativos da decisão, trade-offs, riscos conhecidos, custos técnicos ou organizacionais]
+```
+
+Esta seção deve responder: **Quais são os impactos desta decisão?**
+
+#### 6. Alternativas Consideradas (Obrigatório)
+
+```markdown
+## Alternativas Consideradas
+
+[Lista objetiva das alternativas avaliadas e motivos claros para rejeição de cada alternativa]
+```
+
+Esta seção é **obrigatória** e deve demonstrar que outras opções foram avaliadas.
+
+---
+
+## Regras Gerais e Boas Práticas
+
+### Regras Obrigatórias
+
+1. **NÃO** misturar múltiplos diagramas no mesmo arquivo
+2. **NÃO** misturar tipos diferentes de UML no mesmo diagrama
+3. **NÃO** criar documentação fora da pasta `/docs`
+4. Toda decisão arquitetural relevante **DEVE** gerar um ADR
+5. Clareza, precisão e utilidade prática são prioritárias
+6. Linguagem técnica, direta e sem floreios
+
+### Boas Práticas
+
+#### Manutenção da Documentação
+
+- **Atualize a documentação junto com o código**: Documentação desatualizada é pior que documentação ausente
+- **Revise ADRs periodicamente**: Status de ADRs podem mudar (Aceito → Depreciado, por exemplo)
+- **Mantenha o índice mestre atualizado**: Sempre que criar, remover ou renomear um documento, atualize o `/docs/README.md`
+- **Use versionamento**: Documentação deve estar no controle de versão (Git) junto com o código
+
+#### Qualidade da Documentação
+
+- **Seja específico**: Evite generalidades. Use exemplos concretos
+- **Seja honesto**: Documente problemas conhecidos e limitações, não apenas aspectos positivos
+- **Mantenha foco**: Cada documento deve ter um propósito claro e bem definido
+- **Revise criticamente**: A seção "Observações Críticas" deve ser realmente crítica, não apenas descritiva
+
+#### Colaboração
+
+- **Peça revisão**: Documentação técnica se beneficia de revisão por pares
+- **Documente decisões em grupo**: ADRs devem refletir o consenso da equipe
+- **Mantenha histórico**: Use Git para rastrear evolução da documentação
+
+### Versionamento da Documentação
+
+A documentação **DEVE** estar versionada junto com o código:
+
+- Cada mudança na documentação deve ser commitada com mensagens descritivas
+- Use tags/convenções de commit que identifiquem mudanças na documentação
+- Considere incluir a documentação no processo de code review
+
+**Exemplo de mensagens de commit:**
+```
+docs: adiciona diagrama de sequência para checkout
+docs: atualiza ADR-001 com novas consequências
+docs: corrige nomenclatura de diagramas conforme padrão
+```
+
+---
+
+## Ferramentas e Recursos
+
+### Ferramentas Recomendadas
+
+#### Para Diagramas Mermaid
+
+- **Visual Studio Code**: Extensão "Markdown Preview Mermaid Support"
+- **GitHub/GitLab**: Renderização nativa de Mermaid em arquivos `.md`
+- **Mermaid Live Editor**: https://mermaid.live/ (para testar diagramas)
+- **Draw.io/Diagrams.net**: Suporte a exportação para Mermaid
+
+#### Para Edição de Markdown
+
+- **Visual Studio Code**: Com extensões Markdown
+- **Typora**: Editor WYSIWYG para Markdown
+- **Obsidian**: Para documentação interconectada
+
+#### Para Validação
+
+- **Mermaid CLI**: Para validar sintaxe de diagramas Mermaid
+- **Markdown Linters**: Para validar formatação Markdown
+
+### Recursos de Aprendizado
+
+#### UML 2.0
+
+- **UML 2.5 Specification**: https://www.omg.org/spec/UML/
+- **UML Distilled** (Martin Fowler): Livro de referência concisa
+- **Visual Paradigm Guides**: Tutoriais sobre tipos de diagramas UML
+
+#### Mermaid
+
+- **Documentação Oficial**: https://mermaid.js.org/
+- **Mermaid Syntax Guide**: https://mermaid.js.org/intro/syntax-reference.html
+- **Exemplos**: https://mermaid.js.org/ecosystem/tutorials.html
+
+#### ADRs
+
+- **ADR GitHub**: https://github.com/joelparkerhenderson/architecture-decision-record
+- **Documenting Architecture Decisions**: Artigo de Michael Nygard (criador do formato ADR)
+- **ADR Tools**: Ferramentas para gerenciar ADRs
+
+### Links Úteis
+
+- **Mermaid Live Editor**: https://mermaid.live/
+- **Markdown Guide**: https://www.markdownguide.org/
+- **CommonMark Spec**: https://commonmark.org/
+
+---
+
+## Conclusão
+
+Este documento estabelece os padrões fundamentais para documentação técnica do projeto. Seguir essas diretrizes garante:
+
+- **Consistência**: Toda documentação segue a mesma estrutura e padrões
+- **Qualidade**: Documentação útil, clara e mantível
+- **Rastreabilidade**: Decisões arquiteturais são registradas e justificadas
+- **Evolução**: Documentação que evolui junto com o projeto
+
+**Lembre-se**: Documentação é código. Trate-a com o mesmo cuidado, revisão e versionamento.
+
+---
+
+*Última atualização: [Data da última revisão]*

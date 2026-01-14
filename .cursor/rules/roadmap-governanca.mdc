@@ -1,0 +1,493 @@
+---
+description: "Regras de governança de roadmap, personas e critérios de avanço por fase (PoC, MVP, RC, v1.0)"
+alwaysApply: false
+globs: []
+---
+
+# Product Roadmap – Policy & Phase Governance
+
+## SUMÁRIO EXECUTIVO
+
+Este documento estabelece o modelo de governança para evolução de produtos digitais
+em quatro fases progressivas: PoC → MVP → RC → v1.0.
+
+Princípio central: cada fase deve mitigar seu risco dominante antes do avanço,
+evitando a adição prematura de complexidade que não agrega valor.
+
+Público-alvo: Product Owners, Tech Leads, equipes de desenvolvimento e stakeholders.
+
+
+# GLOSSÁRIO
+
+## Fases do Roadmap
+
+- PoC (Proof of Concept): Prova de Conceito — valida viabilidade técnica
+- MVP (Minimum Viable Product): Produto Mínimo Viável — valida valor real para usuários
+- RC (Release Candidate): Candidato a Lançamento — valida estabilidade e qualidade
+- v1.0 (Release Final): Versão Final — entrega produto confiável e operável
+
+## Personas
+
+- SSE / Tech Lead: Senior Software Engineer ou Líder Técnico — decisões arquiteturais e implementação
+- DevSecOps: Desenvolvedor com responsabilidades de segurança e operações — integra segurança ao CI/CD
+- AppSec: Application Security — especialista dedicado em segurança de aplicações
+- QA: Quality Assurance — garantia de qualidade e testes formais
+- SRE: Site Reliability Engineering — engenharia de confiabilidade de serviços
+- Product Owner (lean): Dono do produto com foco em validação rápida
+- UX (formal): User Experience — design de experiência com processos estruturados
+- Customer Success / Support: Equipe de sucesso do cliente e suporte técnico
+
+## Termos Técnicos
+
+- Risco dominante: Principal risco que uma fase deve mitigar antes do avanço
+- Evidência objetiva: Dados, métricas ou artefatos mensuráveis que comprovam mitigação
+- Complexidade dominante: Principal fonte de complexidade técnica ou organizacional
+- Código descartável: Código que pode ser descartado sem impacto — essencial em PoC
+
+
+# POLÍTICA GLOBAL DE PRODUTO
+
+REGRA CRÍTICA:
+O produto somente pode avançar para a próxima fase quando o risco dominante
+da fase atual estiver mitigado com evidência objetiva.
+
+Personas, processos e ferramentas existem exclusivamente para mitigar riscos reais.
+Nunca devem ser adicionados por maturidade percebida ou "melhores práticas".
+
+Apenas UMA complexidade dominante é permitida por fase.
+
+
+# DIRETRIZES GLOBAIS (TODAS AS FASES)
+
+- Uma complexidade por fase: foco único para maximizar efetividade
+- Personas orientadas por risco: adição justificada pela mitigação de riscos reais
+- Segurança progressiva: nunca binária — evolui conforme o impacto aumenta
+- Documentação proporcional: cresce com o impacto potencial de falhas
+- "Funciona" não é critério: funcionamento básico nunca é suficiente para liberação
+- Clientes pagantes têm prioridade: estabilidade prevalece sobre velocidade
+
+NOTA - Priorização de Clientes Pagantes:
+Quando há clientes pagantes ativos, estabilidade e confiabilidade têm prioridade absoluta.
+Bugs críticos, incidentes de segurança e problemas de estabilidade devem ser resolvidos
+antes de adicionar novas features.
+
+
+# PROCESSO DE DECISÃO ENTRE FASES
+
+## Fluxo de Transição
+
+PoC ────▶ MVP ────▶ RC ────▶ v1.0
+
+## Requisitos para Transição
+
+Cada transição requer obrigatoriamente:
+
+1. Validação de critérios de saída: todos os itens do checklist completos
+2. Evidência objetiva: comprovação mensurável de mitigação do risco dominante
+3. Aprovação explícita: autorização formal do Tech Lead ou Product Owner
+4. Documentação: registro da decisão, evidências e justificativas
+
+## Evidências Objetivas Aceitáveis por Transição
+
+PoC → MVP:
+- Demonstração funcional
+- Código executável
+- Documentação de decisões arquiteturais
+
+MVP → RC:
+- Métricas de uso real
+- Feedback de usuários documentado
+- Logs de produção
+- Registro de incidentes
+
+RC → v1.0:
+- Período de estabilidade (ex.: 30 dias sem incidentes críticos)
+- SLA cumprido
+- Processos testados em produção
+
+## Processo de Exceção (Waiver)
+
+ATENÇÃO: Waivers são mecanismos excepcionais — usar com extrema cautela.
+
+Casos aplicáveis:
+- Adicionar persona proibida temporariamente
+- Avançar sem completar todos os critérios de saída
+- Pular uma fase (fortemente não recomendado)
+
+Requisitos obrigatórios para aprovação:
+1. Justificativa escrita do risco mitigado e necessidade do waiver
+2. Plano de mitigação do risco adicional introduzido
+3. Aprovação de pelo menos 2 stakeholders seniores
+4. Revisão obrigatória após 30 dias
+
+## Matriz de Responsabilidades
+
+- Tech Lead / SSE: validar critérios técnicos e aprovar transições
+- Product Owner: validar critérios de negócio e priorizar recursos
+- Equipe: documentar evidências e implementar critérios de saída
+
+
+# FASE: PoC — Proof of Concept (Prova de Conceito)
+
+## Objetivo
+
+Validar a viabilidade técnica da ideia central.
+
+## Personas
+
+Permitidas:
+- SSE / Tech Lead
+
+Proibidas:
+- QA
+- DevSecOps
+- AppSec
+- UX (formal)
+- SRE
+
+## Risco Dominante
+
+Viabilidade técnica e arquitetural.
+
+Exemplos de riscos típicos:
+- Tecnologia escolhida não suporta requisitos de performance
+- Arquitetura proposta não escala conforme necessário
+- Integrações críticas não são tecnicamente viáveis
+- Algoritmos ou abordagens não funcionam como esperado
+
+## Critérios de Entrada
+
+- [ ] Problema técnico central claramente definido
+- [ ] Hipótese técnica única a ser validada
+- [ ] Escopo funcional mínimo delimitado
+
+## Critérios de Saída
+
+- [ ] Fluxo principal funciona de ponta a ponta
+- [ ] Decisões arquiteturais brevemente documentadas
+- [ ] Limitações conhecidas explicitamente listadas
+- [ ] Código tratado explicitamente como descartável
+
+## Evidências Objetivas Aceitáveis
+
+- Código executável: demonstra o fluxo principal funcionando
+- Documento de arquitetura: decisões e trade-offs registrados (mesmo que breve)
+- Lista de limitações: restrições conhecidas e suposições documentadas
+- Declaração de descartabilidade: confirmação de que o código não será base para produção
+
+## Exemplos Práticos
+
+✅ Cenário Válido:
+"Precisamos validar se conseguimos processar 1M de eventos/segundo com Kafka.
+Vamos criar um PoC que simula carga e mede throughput.
+O código será descartado após validação."
+
+❌ Sinais de Alerta (Red Flags):
+- "Vamos usar o código do PoC como base para produção"
+- "Precisamos adicionar testes automatizados no PoC"
+- "Vamos fazer code review formal do PoC"
+- "Precisamos de aprovação de segurança antes de começar"
+
+## Regra de Ouro
+
+SE O CÓDIGO NÃO É DESCARTÁVEL, NÃO É UM PoC.
+
+
+# FASE: MVP — Minimum Viable Product (Produto Mínimo Viável)
+
+## Objetivo
+
+Validar o valor real para usuários e a relevância de negócio.
+
+## Personas
+
+Permitidas:
+- SSE / Tech Lead
+- DevSecOps
+- Product Owner (lean)
+
+Proibidas:
+- QA (formal)
+- AppSec
+- SRE
+
+## Risco Dominante
+
+Operações básicas e segurança mínima.
+
+Exemplos de riscos típicos:
+- Sistema não consegue ser implantado de forma repetível
+- Credenciais hardcoded ou expostas
+- Falta de visibilidade básica (logs) para diagnosticar problemas
+- Ambiente de produção não isolado de desenvolvimento
+
+## Critérios de Entrada
+
+- [ ] PoC tecnicamente validado
+- [ ] Proposta de valor claramente definida
+- [ ] Usuário ou cliente-alvo identificado
+
+## Critérios de Saída
+
+- [ ] Deploy automatizado implementado
+- [ ] Gestão de secrets implementada
+- [ ] Logging básico habilitado
+- [ ] Isolamento mínimo de ambientes configurado
+- [ ] Comportamento das features principais estabilizado
+- [ ] Feedback de usuários reais coletado
+
+## Evidências Objetivas Aceitáveis
+
+- Pipeline de CI/CD: funcional e realizando deploy automático
+- Gestão de secrets: em variáveis de ambiente ou gerenciador dedicado (não hardcoded)
+- Sistema de logs: acessíveis e pesquisáveis (CloudWatch, ELK ou similar)
+- Separação de ambientes: dev/staging/prod ou, minimamente, dev/prod
+- Métricas de uso: número de usuários, transações, erros documentados
+- Feedback documentado: retorno de pelo menos 3-5 usuários reais
+
+## Exemplos Práticos
+
+✅ Cenário Válido:
+"Temos 10 usuários beta usando o sistema.
+Implementamos deploy automático via GitHub Actions, secrets no AWS Secrets Manager,
+logs no CloudWatch, e coletamos feedback semanal.
+Identificamos 3 problemas críticos que precisamos resolver antes de escalar."
+
+❌ Sinais de Alerta (Red Flags):
+- "Vamos adicionar testes end-to-end completos antes de lançar o MVP"
+- "Precisamos de auditoria de segurança completa"
+- "Vamos implementar monitoramento avançado com APM"
+- "Precisamos de SRE dedicado para o MVP"
+
+## Regra de Ouro
+
+MVP EXISTE PARA APRENDER, NÃO PARA ESCALAR.
+
+
+# FASE: RC — Release Candidate (Candidato a Lançamento)
+
+## Objetivo
+
+Validar estabilidade, repetibilidade e controle de releases.
+
+## Personas
+
+Permitidas:
+- SSE / Tech Lead
+- DevSecOps
+- QA
+
+Proibidas:
+- AppSec dedicado
+- SRE dedicado
+
+## Risco Dominante
+
+Qualidade, regressões e confiabilidade.
+
+Exemplos de riscos típicos:
+- Novas features quebram funcionalidades existentes
+- Releases introduzem bugs críticos em produção
+- Não há processo para reverter releases problemáticos
+- Bugs não são classificados e priorizados adequadamente
+
+## Critérios de Entrada
+
+- [ ] MVP em uso real por usuários
+- [ ] Features principais estabilizadas
+- [ ] Requisitos não mudam semanalmente
+
+Critério de estabilização: requisitos não devem mudar semanalmente
+por pelo menos 4 semanas consecutivas.
+
+## Critérios de Saída
+
+- [ ] Testes automatizados de regressão mínimos
+- [ ] Critérios de aceitação explícitos definidos
+- [ ] Pipeline bloqueia releases em caso de falha
+- [ ] Bugs classificados por severidade
+- [ ] Processo de release documentado
+- [ ] Rollback validado na prática
+
+## Evidências Objetivas Aceitáveis
+
+- Suite de testes: cobertura de fluxos críticos (60-70% do código crítico)
+- Critérios de aceitação: documentados para cada feature
+- Pipeline com gates: falha e bloqueia deploy se testes falharem
+- Classificação de bugs: sistema em uso (Critical, High, Medium, Low)
+- Processo de release: documento com passos claros e responsabilidades
+- Rollback testado: executado com sucesso ao menos uma vez (staging é aceitável)
+
+## Exemplos Práticos
+
+✅ Cenário Válido:
+"Temos testes automatizados cobrindo os 5 fluxos principais.
+O pipeline bloqueia deploy se testes falharem.
+Documentamos processo de release e testamos rollback em staging.
+Classificamos bugs por severidade e temos SLA interno de 24h para críticos."
+
+❌ Sinais de Alerta (Red Flags):
+- "Vamos adicionar AppSec dedicado para fazer pentest completo"
+- "Precisamos de SRE para configurar monitoramento avançado"
+- "Vamos implementar testes de performance completos antes de RC"
+- "Precisamos de documentação completa da arquitetura"
+
+## Regra de Ouro
+
+RC EXISTE PARA IMPEDIR QUEBRAS, NÃO PARA CRIAR FEATURES.
+
+
+# FASE: v1.0 — Release Final
+
+## Objetivo
+
+Entregar um produto defensável, operável e confiável.
+
+## Personas
+
+Permitidas:
+- SSE / Tech Lead
+- DevSecOps
+- QA
+- Customer Success / Support
+
+Permitidas (condicionais):
+- AppSec (consultivo ou part-time)
+- SRE / Ops (apenas com SLA ou incidentes)
+- UX (apenas se adoção for um risco)
+
+## Risco Dominante
+
+Escala, reputação e governança.
+
+Exemplos de riscos típicos:
+- Incidentes em produção afetam a reputação da empresa
+- Falta de capacidade para escalar conforme demanda
+- Ausência de processo para responder a incidentes
+- Clientes não conseguem usar o produto por falta de documentação
+- Problemas de segurança expõem dados de clientes
+
+## Critérios de Entrada
+
+- [ ] RC estável por período definido
+- [ ] Cliente(s) pagante(s) ativo(s)
+- [ ] Fluxo de suporte identificado
+
+Critério de estabilidade: RC estável por período mínimo de 30 dias
+sem incidentes críticos ou 60 dias com no máximo 1 incidente crítico.
+
+## Critérios de Saída
+
+- [ ] Monitoramento e alertas ativos
+- [ ] Backup e recuperação testados
+- [ ] Runbooks de incidentes disponíveis
+- [ ] Política de segurança básica documentada
+- [ ] Evidências mínimas de compliance (se aplicável)
+- [ ] Documentação de onboarding
+- [ ] Canal de suporte definido
+
+## Evidências Objetivas Aceitáveis
+
+- Monitoramento: sistema ativo com alertas configurados (CloudWatch, Datadog, New Relic)
+- Backup: testado e restaurado com sucesso (teste documentado)
+- Runbooks: disponíveis e testados (processo de resposta a downtime, etc.)
+- Política de segurança: documentada (mesmo que básica)
+- Compliance: evidências se aplicável (LGPD, SOC2, ISO27001)
+- Onboarding: documentação para novos usuários e/ou desenvolvedores
+- Suporte: canal definido e operacional (email, ticket system, Slack)
+
+## Exemplos Práticos
+
+✅ Cenário Válido:
+"Temos 50 clientes pagantes, RC estável há 45 dias.
+Monitoramento ativo com alertas, backups testados mensalmente,
+runbooks de incidentes, política de segurança básica,
+documentação de onboarding, e suporte via email com SLA de 4h para críticos."
+
+❌ Sinais de Alerta (Red Flags):
+- "Vamos adicionar todas as personas de uma vez"
+- "Precisamos de documentação completa de tudo antes de v1.0"
+- "Vamos implementar todas as práticas de segurança de uma vez"
+- "Precisamos de SRE dedicado mesmo sem SLA ou incidentes"
+
+## Regra de Ouro
+
+v1.0 PROTEGE REPUTAÇÃO, NÃO EGO TÉCNICO.
+
+
+# MATRIZ RESUMO: PERSONAS POR FASE
+
+| Persona              | PoC | MVP | RC  | v1.0           |
+|----------------------|-----|-----|-----|----------------|
+| SSE / Tech Lead      | ✅  | ✅  | ✅  | ✅             |
+| DevSecOps            | ❌  | ✅  | ✅  | ✅             |
+| Product Owner (lean) | ❌  | ✅  | ✅  | ✅             |
+| QA (formal)          | ❌  | ❌  | ✅  | ✅             |
+| AppSec               | ❌  | ❌  | ❌  | ⚡ consultivo   |
+| SRE / Ops            | ❌  | ❌  | ❌  | ⚡ com SLA      |
+| UX (formal)          | ❌  | ❌  | ❌  | ⚡ se adoção é risco |
+| Customer Success     | ❌  | ❌  | ❌  | ✅             |
+
+Legenda: ✅ Permitida | ❌ Proibida | ⚡ Condicional
+
+
+# PERGUNTAS FREQUENTES (FAQ)
+
+## "Precisamos adicionar [persona] porque é best practice"
+
+Resposta: Personas são adicionadas exclusivamente quando mitigam riscos reais.
+Se não há risco claro que a persona mitiga, ela não deve ser adicionada.
+
+Pergunta-chave: "Qual risco específico esta persona mitiga na fase atual?"
+
+## "Podemos pular uma fase?"
+
+Resposta: Não recomendado. Cada fase mitiga riscos específicos.
+Pular fases geralmente resulta em débito técnico e problemas não mitigados.
+Se absolutamente necessário, utilize o processo formal de waiver.
+
+## "Como sabemos se o risco dominante foi mitigado?"
+
+Resposta: Utilize evidências objetivas e mensuráveis.
+Se não é possível medir ou demonstrar a mitigação de forma tangível,
+o risco provavelmente não foi mitigado.
+
+## "E se tivermos múltiplos riscos dominantes?"
+
+Resposta: Escolha um único risco. A regra é: apenas um risco dominante por fase.
+Focar em múltiplos riscos dilui o esforço e reduz a efetividade.
+
+## "Quando podemos adicionar QA formal?"
+
+Resposta: QA formal é permitido a partir da fase RC,
+quando o risco dominante passa a ser qualidade e regressões.
+Em PoC e MVP, QA formal adiciona complexidade sem mitigar o risco dominante.
+
+## "E se tivermos clientes pagantes antes de v1.0?"
+
+Resposta: Clientes pagantes não alteram a fase atual, mas alteram as prioridades.
+A regra "Clientes pagantes têm prioridade" significa que estabilidade
+e confiabilidade precedem novas features.
+
+
+# CHECKLIST DE DECISÃO RÁPIDA
+
+Use antes de qualquer decisão de avanço ou adição de recursos:
+
+- [ ] O risco dominante da fase atual foi mitigado?
+- [ ] Existe evidência objetiva e mensurável da mitigação?
+- [ ] Todos os critérios de saída foram atendidos?
+- [ ] A persona/processo/ferramenta a ser adicionada mitiga um risco real?
+- [ ] A aprovação foi obtida do Tech Lead ou Product Owner?
+- [ ] A decisão e evidências foram documentadas?
+
+
+# REGRA FINAL DE GOVERNANÇA
+
+REGRA CRÍTICA E INEGOCIÁVEL:
+
+Se uma persona não consegue declarar explicitamente qual risco ela mitiga,
+ELA NÃO DEVE SER ADICIONADA AO PROJETO.
+
+Esta regra aplica-se a TODAS as fases e deve ser o TESTE FINAL
+antes de adicionar qualquer persona, processo ou ferramenta.
