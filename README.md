@@ -51,7 +51,10 @@ Todas as regras estão localizadas na pasta `.cursor/rules/` e seguem o formato 
     ├── documentacao.mdc
     ├── restful-api.mdc
     ├── git.mdc
-    └── troubleshooting.mdc
+    ├── troubleshooting.mdc
+    ├── planejamento_tecnico.mdc
+    ├── revisao_critica_tecnica.mdc
+    └── resumo_executivo.mdc
 ```
 
 Cada arquivo contém:
@@ -331,6 +334,87 @@ rm -rf temp-rules
 
 ---
 
+### 9. `planejamento_tecnico.mdc`
+
+**Quando se aplica**: Projetos em andamento que precisam de análise e planejamento técnico
+
+**Descrição**: Regra para análise de projetos em desenvolvimento, identificando o que está implementado, o que falta, inconsistências e riscos. Gera um plano técnico detalhado **sem modificar código**.
+
+**Principais tópicos**:
+- Análise do estado atual da implementação
+- Verificação de aderência à especificação
+- Identificação de lacunas e itens parcialmente implementados
+- Revisão crítica de arquitetura
+- Identificação de dívida técnica e riscos
+- Plano proposto para conclusão do projeto
+- Dependências, restrições e premissas
+- Pontos que exigem decisão humana
+
+**Output**: Gera `docs/PLAN_TECNICO.md` com estrutura completa de planejamento técnico
+
+**Uso**: Ative manualmente quando precisar de uma análise técnica completa de um projeto em andamento. A regra **não escreve código**, apenas analisa e documenta.
+
+**Quando usar**:
+- Projeto parcialmente implementado que precisa de roadmap
+- Análise de aderência à especificação
+- Identificação de gaps técnicos antes de continuar desenvolvimento
+- Planejamento de conclusão de projeto
+
+---
+
+### 10. `revisao_critica_tecnica.mdc`
+
+**Quando se aplica**: Quando é necessário uma auditoria técnica crítica de um projeto existente
+
+**Descrição**: Regra para revisão crítica técnica no modo auditor, identificando fraquezas, atalhos, code smells e riscos de escalabilidade, segurança e manutenibilidade.
+
+**Principais tópicos**:
+- Revisão crítica de arquitetura e decisões de design
+- Identificação de fraquezas e atalhos técnicos
+- Detecção de code smells e padrões problemáticos
+- Análise de riscos (escalabilidade, segurança, manutenibilidade)
+- Recomendações técnicas baseadas em código existente
+
+**Output**: Anexa seção "Revisão Crítica e Recomendações Técnicas" ao `docs/PLAN_TECNICO.md`
+
+**Uso**: Ative manualmente quando precisar de uma auditoria técnica rigorosa. A regra **não modifica código**, apenas analisa criticamente o que existe.
+
+**Quando usar**:
+- Antes de assumir um projeto existente
+- Revisão de arquitetura antes de grandes mudanças
+- Identificação de dívida técnica crítica
+- Auditoria de segurança e performance
+- Validação de decisões técnicas passadas
+
+---
+
+### 11. `resumo_executivo.mdc`
+
+**Quando se aplica**: Quando é necessário comunicar o estado técnico do projeto para stakeholders executivos
+
+**Descrição**: Regra para gerar resumo executivo focado em decisões e governança, traduzindo o estado técnico em informações orientadas a decisão para gestão.
+
+**Principais tópicos**:
+- Resumo executivo do estado do projeto
+- O que está pronto vs. o que falta (visão de alto nível)
+- Principais riscos e impactos (negócio e técnico)
+- Estimativa qualitativa de esforço
+- Decisões necessárias para avanço
+- Considerações estratégicas
+
+**Output**: Gera `docs/PLAN_EXECUTIVO.md` com linguagem não-técnica e foco em decisões
+
+**Uso**: Ative manualmente quando precisar apresentar status técnico para gestão ou stakeholders não-técnicos. A regra **não modifica código ou planos técnicos**.
+
+**Quando usar**:
+- Apresentação de status para gestão
+- Solicitação de aprovação de recursos
+- Comunicação de riscos e bloqueios
+- Governança e tomada de decisão estratégica
+- Alinhamento entre equipe técnica e negócio
+
+---
+
 ## 🔧 Manutenção
 
 ### Atualizando Regras
@@ -349,6 +433,188 @@ Quando as regras forem atualizadas no repositório central:
 2. **Sem Submodule**:
    - Baixar manualmente as atualizações
    - Copiar para `.cursor/rules/`
+
+### Atualizando o Submódulo em Outros Projetos
+
+Quando este repositório (cursor-rules) recebe atualizações, você precisa atualizar o submódulo nos projetos que o utilizam.
+
+#### Cenário 1: Primeira Vez (Adicionar Submódulo)
+
+Se você ainda não adicionou este repositório como submódulo no seu projeto:
+
+```bash
+# 1. No diretório raiz do seu projeto
+cd /caminho/do/seu/projeto
+
+# 2. Adicionar o submódulo
+git submodule add https://github.com/seu-org/cursor-rules.git .cursor/rules-source
+
+# 3. Copiar as regras para a pasta .cursor/rules
+# Linux/Mac/Git Bash:
+cp -r .cursor/rules-source/.cursor/rules .cursor/rules
+
+# Windows PowerShell:
+Copy-Item -Recurse .cursor\rules-source\.cursor\rules .cursor\rules
+
+# 4. Commitar a adição do submódulo
+git add .gitmodules .cursor/rules-source .cursor/rules
+git commit -m "chore: add cursor rules as submodule"
+```
+
+#### Cenário 2: Atualizar Submódulo Existente
+
+Quando este repositório recebe novas regras ou atualizações:
+
+```bash
+# 1. No diretório raiz do projeto que usa o submódulo
+cd /caminho/do/seu/projeto
+
+# 2. Atualizar o submódulo para a última versão do branch padrão
+git submodule update --remote .cursor/rules-source
+
+# 3. Recopiar as regras atualizadas
+# Linux/Mac/Git Bash:
+cp -r .cursor/rules-source/.cursor/rules .cursor/rules
+
+# Windows PowerShell:
+Copy-Item -Recurse -Force .cursor\rules-source\.cursor\rules .cursor\rules
+
+# 4. Verificar as mudanças
+git status
+
+# 5. Commitar a atualização
+git add .cursor/rules .cursor/rules-source
+git commit -m "chore: update cursor rules to latest version"
+```
+
+#### Cenário 3: Atualizar para Branch/Tag Específica
+
+Se você precisa atualizar para uma versão específica (tag ou branch):
+
+```bash
+# 1. Entrar no diretório do submódulo
+cd .cursor/rules-source
+
+# 2. Buscar todas as atualizações
+git fetch origin
+
+# 3. Fazer checkout para a tag/branch desejada
+git checkout v1.2.0  # ou nome-do-branch
+
+# 4. Voltar para o diretório raiz do projeto
+cd ../..
+
+# 5. Recopiar as regras
+cp -r .cursor/rules-source/.cursor/rules .cursor/rules
+
+# 6. Commitar a atualização
+git add .cursor/rules .cursor/rules-source
+git commit -m "chore: update cursor rules to v1.2.0"
+```
+
+#### Cenário 4: Clonar Projeto com Submódulo
+
+Quando você clona um projeto que já usa este submódulo:
+
+```bash
+# Opção 1: Clonar com submódulos recursivamente (recomendado)
+git clone --recurse-submodules https://github.com/seu-org/seu-projeto.git
+
+# Opção 2: Clonar normalmente e depois inicializar submódulos
+git clone https://github.com/seu-org/seu-projeto.git
+cd seu-projeto
+git submodule init
+git submodule update
+
+# 3. Copiar as regras
+cp -r .cursor/rules-source/.cursor/rules .cursor/rules
+```
+
+#### Cenário 5: Atualização Automática (Script)
+
+Para facilitar, você pode criar um script de atualização:
+
+**`update-cursor-rules.sh` (Linux/Mac/Git Bash):**
+```bash
+#!/bin/bash
+# update-cursor-rules.sh
+
+echo "🔄 Atualizando Cursor Rules..."
+
+# Atualizar submódulo
+git submodule update --remote .cursor/rules-source
+
+# Recopiar regras
+echo "📋 Copiando regras..."
+cp -r .cursor/rules-source/.cursor/rules .cursor/rules
+
+echo "✅ Regras atualizadas com sucesso!"
+echo "📝 Execute 'git status' para ver as mudanças"
+```
+
+**`update-cursor-rules.ps1` (Windows PowerShell):**
+```powershell
+# update-cursor-rules.ps1
+
+Write-Host "🔄 Atualizando Cursor Rules..." -ForegroundColor Cyan
+
+# Atualizar submódulo
+git submodule update --remote .cursor/rules-source
+
+# Recopiar regras
+Write-Host "📋 Copiando regras..." -ForegroundColor Yellow
+Copy-Item -Recurse -Force .cursor\rules-source\.cursor\rules .cursor\rules
+
+Write-Host "✅ Regras atualizadas com sucesso!" -ForegroundColor Green
+Write-Host "📝 Execute 'git status' para ver as mudanças" -ForegroundColor Cyan
+```
+
+**Uso:**
+```bash
+# Linux/Mac/Git Bash
+chmod +x update-cursor-rules.sh
+./update-cursor-rules.sh
+
+# Windows PowerShell
+.\update-cursor-rules.ps1
+```
+
+#### Troubleshooting: Submódulo Desatualizado
+
+Se o submódulo estiver desatualizado ou com problemas:
+
+```bash
+# 1. Remover o submódulo (se necessário)
+git submodule deinit -f .cursor/rules-source
+git rm -f .cursor/rules-source
+
+# 2. Limpar cache do Git
+rm -rf .git/modules/.cursor/rules-source
+
+# 3. Re-adicionar o submódulo
+git submodule add https://github.com/seu-org/cursor-rules.git .cursor/rules-source
+
+# 4. Copiar regras
+cp -r .cursor/rules-source/.cursor/rules .cursor/rules
+
+# 5. Commitar
+git add .gitmodules .cursor/rules-source .cursor/rules
+git commit -m "chore: re-add cursor rules submodule"
+```
+
+#### Verificar Versão do Submódulo
+
+Para ver qual commit do submódulo está sendo usado:
+
+```bash
+# Ver status do submódulo
+git submodule status .cursor/rules-source
+
+# Ver último commit do submódulo
+cd .cursor/rules-source
+git log -1 --oneline
+cd ../..
+```
 
 ### Adicionando Novas Regras
 
