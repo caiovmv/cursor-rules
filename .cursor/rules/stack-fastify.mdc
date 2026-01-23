@@ -1,0 +1,703 @@
+---
+description: "Regra de stack, infraestrutura e documentação para backend em Node.js/Fastify"
+alwaysApply: false
+globs: ["**/*.ts", "**/*.js", "**/package.json", "**/tsconfig.json"]
+---
+
+# Backend – Stack & Project Documentation (Node.js/Fastify)
+
+## Escopo
+
+Esta regra define os **padrões técnicos obrigatórios** para projetos backend em **Node.js/Fastify**, incluindo processamento assíncrono (BullMQ), persistência, observabilidade, infraestrutura e CI/CD.
+
+**Aplica-se somente quando o projeto usa Node.js/Fastify como backend.**
+
+---
+
+## Stack Base
+
+### Backend
+
+- **Linguagem**: TypeScript (obrigatório, não JavaScript puro)
+- **Runtime**: Node.js 20+ LTS (preferencial 22+)
+- **Framework**: Fastify
+- **Type Safety**: TypeScript strict mode obrigatório
+- **Async/Await**: preferir operações assíncronas para I/O
+
+### Processamento Assíncrono
+
+- **BullMQ**: processamento de tarefas em background
+  - Redis como broker
+  - Workers isolados por tipo de tarefa quando necessário
+  - Retry policies configuradas por tarefa
+  - Dead Letter Queue (DLQ) para falhas persistentes
+  - Priorização e rate limiting por fila
+
+---
+
+## Arquitetura
+
+### Camadas
+
+Separação clara e obrigatória em camadas:
+
+- **Domain**
+  - Entidades de domínio (classes ou interfaces)
+  - Value Objects
+  - Regras de negócio puras
+  - Interfaces de repositório (TypeScript interfaces)
+  
+- **Application**
+  - Use cases / Casos de uso
+  - Services de aplicação
+  - DTOs (TypeScript types/interfaces)
+  - Mapeamentos (quando necessário)
+  
+- **Infrastructure**
+  - Implementações de repositório (Prisma, TypeORM, ou raw SQL)
+  - Acesso a dados (Prisma, TypeORM, pg, ou similar)
+  - Cache (Redis)
+  - Armazenamento (S3)
+  - Mensageria (BullMQ)
+  - Integrações externas
+  - Observabilidade
+  
+- **Presentation**
+  - Routes (Fastify)
+  - Schemas de request/response (JSON Schema ou Zod)
+  - Validação de entrada
+  - Dependency Injection (via Fastify decorators ou manual)
+
+> **Regra inegociável**:  
+> **Domínio nunca depende de infraestrutura ou apresentação.**
+
+### Princípios Arquiteturais
+
+- Dependency Inversion: dependências apontam para abstrações (interfaces)
+- Single Responsibility: cada classe/módulo tem uma responsabilidade
+- Injeção de dependência obrigatória (via construtor ou Fastify decorators)
+- Type safety obrigatório (TypeScript strict mode)
+
+---
+
+## Persistência de Dados
+
+### Banco Relacional
+
+- **SGBD**: PostgreSQL (versão 16+)
+- **ORM padrão**: Prisma (preferencial) ou TypeORM
+  - Schema versionado e revisado
+  - Migrations versionadas
+  - Seed data versionado junto com migrations
+  
+- **Alternativa para queries complexas**: pg (raw SQL quando necessário)
+  - Consultas críticas de performance
+  - Leitura intensiva (relatórios, dashboards)
+  - Quando ORM não atende requisitos de performance
+  
+- **Boas Práticas**:
+  - Queries assíncronas (async/await)
+  - Connection pooling configurado adequadamente
+  - Paginação obrigatória em listagens
+  - Índices para campos de busca frequente
+  - Transações explícitas quando necessário
+  - Evitar N+1 queries (usar includes/joins apropriados)
+
+### Cache
+
+- **Tecnologia**: Redis
+- **Uso típico**:
+  - Cache de leitura (dados frequentemente acessados)
+  - Locks distribuídos (evitar race conditions)
+  - Rate limiting (controle de taxa)
+  - Sessões distribuídas (quando necessário)
+  - BullMQ broker (filas de tarefas)
+  
+- **Regras obrigatórias**:
+  - TTL explícito (nunca infinito)
+  - Cache é otimização → nunca fonte de verdade
+  - Estratégia de invalidação definida
+  - Tratamento de falha do cache (degradação graciosa)
+  - Prefixos consistentes para chaves (`{service}:{entity}:{id}`)
+  - Serialização consistente (JSON)
+
+---
+
+## Processamento Assíncrono (BullMQ)
+
+### Configuração
+
+- **Broker**: Redis (obrigatório)
+- **Connection**: conexão Redis compartilhada quando possível
+- **Workers**: isolados por tipo de tarefa quando necessário
+  - Exemplo: workers separados para `email_tasks`, `processing_tasks`, `general_tasks`
+
+### Princípios
+
+- **Tarefas idempotentes**: podem ser executadas múltiplas vezes sem efeito colateral
+- **Retry controlado**: estratégia de retry com backoff exponencial
+- **Timeout explícito**: todas as tarefas devem ter timeout definido
+- **Dead Letter Queue**: falhas persistentes movidas para DLQ
+- **Observabilidade obrigatória**: métricas de throughput, latência e erros
+- **Priorização**: use filas separadas para tarefas críticas vs. não-críticas
+- **Rate Limiting**: configurar rate limiting por fila quando necessário
+
+### Padrões de Tarefas
+
+```typescript
+import { Job, Queue } from 'bullmq';
+
+interface ProcessDataJob {
+  data: {
+    userId: string;
+    payload: Record<string, unknown>;
+  };
+}
+
+const processQueue = new Queue<ProcessDataJob>('process_tasks', {
+  connection: redisConnection,
+  defaultJobOptions: {
+    attempts: 3,
+    backoff: {
+      type: 'exponential',
+      delay: 2000,
+    },
+    removeOnComplete: {
+      age: 3600, // 1 hora
+      count: 1000,
+    },
+    removeOnFail: {
+      age: 86400, // 24 horas
+    },
+  },
+});
+
+// Worker
+import { Worker } from 'bullmq';
+
+const worker = new Worker<ProcessDataJob>(
+  'process_tasks',
+  async (job: Job<ProcessDataJob>) => {
+    const { userId, payload } = job.data;
+    
+    try {
+      // Lógica da tarefa
+      const result = await processData(userId, payload);
+      
+      // Progress updates quando necessário
+      await job.updateProgress(50);
+      
+      return result;
+    } catch (error) {
+      // Log error com contexto
+      logger.error('Task failed', {
+        jobId: job.id,
+        userId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      
+      // Re-throw para retry automático
+      throw error;
+    }
+  },
+  {
+    connection: redisConnection,
+    concurrency: 5, // Processar até 5 tarefas simultaneamente
+    limiter: {
+      max: 100, // Máximo 100 tarefas
+      duration: 1000, // por segundo
+    },
+  }
+);
+```
+
+### Boas Práticas
+
+- Tarefas pequenas e focadas (single responsibility)
+- Não passar objetos complexos como argumentos (usar IDs ou dados serializáveis)
+- Logs estruturados em todas as tarefas
+- Correlation ID propagado para tarefas
+- Monitoramento de filas (tamanho, latência, taxa de erro)
+- Graceful shutdown de workers
+- Health checks para workers
+
+### Eventos e Observabilidade
+
+```typescript
+// Eventos de fila
+processQueue.on('completed', (job) => {
+  logger.info('Job completed', { jobId: job.id });
+  metrics.increment('bullmq.job.completed', { queue: 'process_tasks' });
+});
+
+processQueue.on('failed', (job, err) => {
+  logger.error('Job failed', {
+    jobId: job?.id,
+    error: err.message,
+  });
+  metrics.increment('bullmq.job.failed', { queue: 'process_tasks' });
+});
+
+// Eventos de worker
+worker.on('completed', (job) => {
+  metrics.histogram('bullmq.job.duration', job.processedOn! - job.timestamp, {
+    queue: 'process_tasks',
+  });
+});
+```
+
+---
+
+## Armazenamento de Objetos
+
+### S3-Compatible Storage
+
+- **Provedores**: AWS S3, MinIO, ou compatíveis
+- **Biblioteca**: @aws-sdk/client-s3 (v3)
+- **Boas Práticas**:
+  - Upload/download assíncronos (streaming quando possível)
+  - Nunca expor credenciais no código (usar IAM roles ou secrets)
+  - URLs assinadas quando necessário (acesso temporário)
+  - Separar storage de regra de negócio (abstração via interface)
+  - Validação de tipo e tamanho antes do upload
+  - Versionamento de objetos quando necessário
+  - Streaming para arquivos grandes (não carregar tudo em memória)
+
+---
+
+## Observabilidade (Obrigatória)
+
+### Métricas
+
+- **Ferramenta**: Prometheus
+- **Tipos de métricas**:
+  - Técnicas: latência, throughput, uso de recursos
+  - Negócio: transações, conversões, eventos de domínio
+- **Boas Práticas**:
+  - Labels com parcimônia (evitar cardinalidade alta)
+  - Nomes consistentes e descritivos
+  - Histogramas para latência (não apenas médias)
+  - Contadores para eventos discretos
+  - Métricas de BullMQ (tarefas processadas, filas, latência)
+
+### Dashboards
+
+- **Ferramenta**: Grafana
+- **Requisitos**:
+  - Dashboards versionados (código, não apenas UI)
+  - Métricas-chave visíveis:
+    - Latência (p50, p95, p99)
+    - Throughput (req/s)
+    - Taxa de erro
+    - Uso de recursos (CPU, memória)
+    - Métricas de BullMQ (filas, workers, latência)
+  - Alertas configurados para métricas críticas
+
+### Logs
+
+- **Ferramenta**: Loki (ou compatível)
+- **Formato**: Logging estruturado (JSON)
+- **Requisitos**:
+  - Correlação por request ID / trace ID
+  - Níveis apropriados (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+  - Nunca logar dados sensíveis (senhas, tokens, PII)
+  - Contexto suficiente para diagnóstico
+  - Rotação e retenção configuradas
+  - Logs de tarefas BullMQ com correlation ID
+
+### APM (Application Performance Monitoring)
+
+- **Padrão**: OpenTelemetry (preferencial)
+- **Instrumentação obrigatória**:
+  - HTTP (entrada e saída)
+  - Banco de dados (queries lentas)
+  - BullMQ (tempo de processamento de tarefas)
+  - Chamadas externas (APIs, serviços)
+  
+- **Princípio**: APM é ferramenta de diagnóstico, não decoração
+  - Usar para identificar gargalos reais
+  - Não instrumentar tudo "por precaução"
+
+---
+
+## Infraestrutura Local
+
+### Docker
+
+- **Docker Compose obrigatório** para ambiente local
+- **Serviços mínimos**:
+  - API (aplicação principal)
+  - PostgreSQL
+  - Redis (broker + cache)
+  - BullMQ Workers (quando separados)
+  - Observabilidade (Prometheus, Grafana, Loki)
+  
+- **Princípios**:
+  - Paridade entre ambiente local e produção (quando possível)
+  - Containers simples, previsíveis e reproduzíveis
+  - Variáveis de ambiente para configuração
+  - Health checks configurados
+  - Volumes nomeados para persistência
+
+### Dockerfile
+
+- Multi-stage builds para imagens menores
+- Usar imagens base oficiais e específicas (não `latest`)
+- Executar como usuário não-root
+- Expor apenas portas necessárias
+- Cache de dependências npm/yarn/pnpm de forma eficiente
+
+---
+
+## CI/CD
+
+### GitHub Actions
+
+- **Ferramenta**: GitHub Actions (ou equivalente)
+- **Pipelines mínimos obrigatórios**:
+  - **Build**: compilação TypeScript e validação
+  - **Lint**: ESLint, Prettier (formatação)
+  - **Type Check**: tsc --noEmit
+  - **Testes**: unitários e integração
+  - **Security scan**: verificação de vulnerabilidades (npm audit, Snyk)
+  
+- **Regras**:
+  - Falha no pipeline bloqueia merge
+  - Secrets via GitHub Secrets (nunca no repositório)
+  - Cache de dependências para performance
+  - Matriz de testes para múltiplas versões do Node.js (quando aplicável)
+
+### Versionamento
+
+- **Git** com branches claras e convenções
+- **Commits**:
+  - Pequenos e descritivos
+  - Mensagens no formato: `tipo(escopo): descrição`
+  - Exemplos: `feat(auth): adiciona autenticação JWT`, `fix(api): corrige validação de email`
+  
+- **Pull Requests**:
+  - Descrição clara do que foi alterado
+  - Contexto e motivação
+  - Impacto esperado
+  - Checklist de validação
+  - Revisão obrigatória antes de merge
+
+---
+
+## Padrões de Código TypeScript
+
+### Convenções
+
+- **Type Safety**: TypeScript strict mode obrigatório
+  ```typescript
+  // tsconfig.json
+  {
+    "compilerOptions": {
+      "strict": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "strictFunctionTypes": true,
+      // ...
+    }
+  }
+  ```
+
+- **Async/Await**: preferir operações assíncronas para I/O
+  ```typescript
+  async function getUser(userId: string): Promise<User | null> {
+    const user = await userRepository.findById(userId);
+    return user;
+  }
+  ```
+
+- **Interfaces vs Types**: usar interfaces para objetos, types para unions/intersections
+  ```typescript
+  interface CreateUserRequest {
+    email: string;
+    name: string;
+  }
+  
+  type UserStatus = 'active' | 'inactive' | 'suspended';
+  ```
+
+- **Error Handling**: exceções específicas e descritivas
+  ```typescript
+  class UserNotFoundError extends Error {
+    constructor(userId: string) {
+      super(`User with ID ${userId} not found`);
+      this.name = 'UserNotFoundError';
+    }
+  }
+  ```
+
+- **Routes**: organizados por domínio/contexto
+  - Routes apenas orquestram (não contêm lógica complexa)
+  - Validação de entrada via JSON Schema ou Zod
+  - Mapeamento para DTOs quando necessário
+  - Nenhuma lógica de negócio em routes
+
+### Estrutura de Projeto
+
+```
+src/
+  domain/
+    entities/
+    value-objects/
+    interfaces/
+  application/
+    services/
+    use-cases/
+    dtos/
+  infrastructure/
+    persistence/
+    cache/
+    storage/
+    messaging/  # BullMQ queues/workers
+    observability/
+  presentation/
+    routes/
+    middleware/
+    plugins/
+    schemas/
+  tests/
+    unit/
+    integration/
+```
+
+### Ferramentas de Qualidade
+
+- **Linting**: ESLint (com regras TypeScript)
+- **Formatting**: Prettier
+- **Type Checking**: TypeScript compiler (tsc)
+- **Security**: npm audit, Snyk
+- **Dependencies**: dependabot para atualizações
+
+---
+
+## Fastify Específico
+
+### Plugins
+
+- **Registro de plugins**: organizados por funcionalidade
+- **Encapsulamento**: usar scoping quando necessário
+- **Hooks**: usar hooks do Fastify para cross-cutting concerns
+  - `onRequest`: autenticação, logging
+  - `preHandler`: validação adicional
+  - `onResponse`: métricas, logging de resposta
+  - `onError`: tratamento de erros
+
+### Schemas
+
+- **JSON Schema**: validação de request/response
+  ```typescript
+  const createUserSchema = {
+    body: {
+      type: 'object',
+      required: ['email', 'name'],
+      properties: {
+        email: { type: 'string', format: 'email' },
+        name: { type: 'string', minLength: 1, maxLength: 100 },
+      },
+    },
+    response: {
+      201: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          email: { type: 'string' },
+          name: { type: 'string' },
+        },
+      },
+    },
+  };
+  
+  fastify.post('/users', { schema: createUserSchema }, async (request, reply) => {
+    // ...
+  });
+  ```
+
+- **Alternativa**: Zod (mais type-safe, mas requer integração)
+  ```typescript
+  import { z } from 'zod';
+  
+  const createUserSchema = z.object({
+    email: z.string().email(),
+    name: z.string().min(1).max(100),
+  });
+  ```
+
+### Decorators (Opcional)
+
+- **Fastify Decorators**: para dependency injection
+  ```typescript
+  import { FastifyRequest, FastifyReply } from 'fastify';
+  
+  @Controller('/users')
+  export class UserController {
+    constructor(private userService: UserService) {}
+    
+    @Get('/:id')
+    async getUser(
+      @Param('id') id: string,
+      request: FastifyRequest,
+      reply: FastifyReply
+    ) {
+      const user = await this.userService.getUser(id);
+      return user;
+    }
+  }
+  ```
+
+### Performance
+
+- **JSON Schema Compilation**: compilar schemas uma vez
+- **Serialization**: usar fast-json-stringify quando possível
+- **Logging**: usar pino (logger padrão do Fastify) com configuração apropriada
+- **Connection Pooling**: configurar adequadamente para DB e Redis
+
+---
+
+## Tratamento de Erros
+
+### Estratégia
+
+- **Error Handlers**: handlers globais para exceções
+- **Separação clara**:
+  - Erros de negócio ≠ erros técnicos
+  - Erros de validação ≠ erros de sistema
+  
+- **Mapeamento HTTP**:
+  - `400 Bad Request`: validação de entrada
+  - `401 Unauthorized`: não autenticado
+  - `403 Forbidden`: não autorizado
+  - `404 Not Found`: recurso não encontrado
+  - `409 Conflict`: conflito de estado
+  - `422 Unprocessable Entity`: erro de validação
+  - `500 Internal Server Error`: erro técnico inesperado
+  - `503 Service Unavailable`: serviço temporariamente indisponível
+  
+- **Segurança**:
+  - Stack trace **nunca** exposto ao cliente (apenas em desenvolvimento)
+  - Mensagens de erro genéricas em produção
+  - Detalhes técnicos apenas em logs
+  
+- **Logs**:
+  - Contexto suficiente para diagnóstico
+  - Correlation ID em todos os logs de erro
+  - Nível apropriado (ERROR para erros, CRITICAL para falhas críticas)
+
+---
+
+## Testes
+
+### Estratégia
+
+- **Unitários**: domínio e aplicação
+  - Foco em lógica de negócio
+  - Isolamento completo (sem dependências externas)
+  - Cobertura de casos de borda
+  - Mocks para integrações externas
+  
+- **Integração**: fluxos críticos
+  - Testes de API (end-to-end de endpoints)
+  - Testes de repositório (com banco em memória ou testcontainers)
+  - Testes de integração com serviços externos (mocks quando necessário)
+  - Testes de tarefas BullMQ
+  
+- **Boas Práticas**:
+  - Evitar mocks excessivos (preferir fakes quando possível)
+  - Testes legíveis e determinísticos
+  - Arrange-Act-Assert (AAA) pattern
+  - Nomes descritivos que explicam o comportamento testado
+  - Um teste, uma responsabilidade
+
+### Ferramentas Recomendadas
+
+- **Framework**: Jest ou Vitest
+- **Mocks**: jest.mock ou vi.mock
+- **HTTP**: supertest ou @fastify/lightweight (para testes de API)
+- **Testcontainers**: para testes de integração com serviços reais
+
+---
+
+## Documentação do Projeto
+
+### README Obrigatório
+
+O README deve conter:
+
+- **Visão geral**: propósito e escopo do projeto
+- **Stack completa**: tecnologias e versões utilizadas
+- **Como rodar**: instruções passo a passo
+  - Pré-requisitos
+  - Instalação de dependências (npm, yarn, ou pnpm)
+  - Configuração de variáveis de ambiente
+  - Como executar com Docker Compose
+  - Como executar localmente (sem Docker)
+  
+- **Variáveis de ambiente**: lista completa com descrição
+- **Fluxo principal**: arquitetura de alto nível e fluxos críticos
+- **API**: documentação de endpoints (Swagger/OpenAPI via @fastify/swagger)
+- **BullMQ**: como executar workers, monitorar filas
+
+### Documentação Técnica
+
+- **ADR (Architecture Decision Records)**: decisões arquiteturais importantes
+  - Contexto da decisão
+  - Alternativas consideradas
+  - Decisão tomada e justificativa
+  - Consequências
+  
+- **Trade-offs explícitos**: quando houver limitações conhecidas
+- **Pontos críticos**: áreas que requerem atenção especial
+- **Limitações conhecidas**: o que o sistema não faz e por quê
+
+---
+
+## Anti-padrões (O que Evitar)
+
+- **Route gordo**: lógica de negócio em routes
+- **Serviço genérico sem propósito**: abstrações desnecessárias
+- **Cache como verdade**: depender de cache para dados críticos
+- **Abstrações especulativas**: criar abstrações "por precaução"
+- **Observabilidade "de fachada"**: métricas que não são usadas
+- **Pipeline quebrado ignorado**: permitir merges com pipeline falhando
+- **Queries N+1**: não usar includes/joins apropriados
+- **Exceções para controle de fluxo**: usar exceções apenas para erros
+- **Logs sem contexto**: logs que não permitem diagnóstico
+- **Dependências desnecessárias**: adicionar pacotes "por precaução"
+- **Tarefas BullMQ síncronas**: sempre usar async/await
+- **Any types**: evitar `any`, usar `unknown` quando necessário
+- **JavaScript puro**: sempre usar TypeScript
+
+---
+
+## Regras de Ouro
+
+> **Se não é observável, não é confiável.**  
+> Sem métricas, logs e traces, não há como diagnosticar problemas em produção.
+
+> **Se não é claro, não é sênior.**  
+> Código claro e bem estruturado é mais valioso que código "inteligente" e obscuro.
+
+> **Simplicidade sobre complexidade.**  
+> Escolher a solução mais simples que resolve o problema, não a mais "elegante".
+
+> **Testes são documentação executável.**  
+> Testes bem escritos documentam o comportamento esperado do sistema.
+
+> **Type safety é obrigatório, não opcional.**  
+> TypeScript strict mode previne bugs, melhora manutenibilidade e serve como documentação.
+
+---
+
+## Notas Finais
+
+Este documento define padrões mínimos obrigatórios. Adaptações são permitidas quando justificadas e documentadas (via ADR).
+
+Em caso de dúvida sobre qual padrão seguir, priorize:
+1. Observabilidade
+2. Testabilidade
+3. Manutenibilidade
+4. Performance (quando medido e necessário)
+5. Type safety (TypeScript strict mode sempre)
