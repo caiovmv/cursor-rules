@@ -1,0 +1,70 @@
+---
+description: Workflow e gates obrigatorios
+globs:
+  - "**/*"
+---
+
+# Workflow e gates (sempre aplicados)
+
+## Fases do Workflow
+
+```
+ESPECIFICAR → PLANEJAR → CODAR → VALIDAR → COMMITAR
+```
+
+## Checklist por Fase
+
+### Fase 0: Especificar
+- Criar/atualizar especificacoes em `.cursor/spec/` antes de iniciar desenvolvimento
+- Usar os templates oficiais:
+  - `TEMPLATE-RF-FUNCIONAL.md`
+  - `TEMPLATE-RF-UX.md`
+  - `TEMPLATE-RF-AI.md`
+- Gerar artefatos do requisito com convencao:
+  - `RF-XX-FUNCIONAL.md`
+  - `RF-XX-UX.md`
+  - `RF-XX-AI.md`
+
+### Fase 1: Planejar
+- Ler `06-planning.mdc` e seguir checklist de leitura obrigatoria
+- Ler `policy.json` para identificar template/versao
+- Ler design system aplicavel (70 ou 71)
+- Ler `72-product-skeleton.mdc` para modulos estruturais
+- Ler especificacoes em `.cursor/spec/` (funcional, UX/UI e agente de IA)
+- Apresentar plano completo antes de codar
+
+### Fase 2: Codar
+- Validar requisitos e ambiguidades antes de iniciar
+- Reutilizar componentes e padroes aprovados
+- Seguir estrutura de pastas `src/features/`
+- Usar APENAS componentes permitidos pelas regras do template ativo
+- Validar cada mudanca contra as especificacoes em `.cursor/spec/` para manter determinismo
+- Durante desenvolvimento de novas features e correcoes, usar as specs como guia operacional e atualizar a RF quando houver mudanca funcional/UX/IA
+
+### Fase 3: Validar
+- Atualizar `reports/{date}.report.json` (`{date}` no formato `YYYY-MM-DD`)
+- Rodar gates de qualidade
+
+### Fase 4: Commitar
+- Nao commitar com violacoes
+
+## Report
+- Use `reports/{date}.report.json` a cada entrega relevante.
+- Garanta coerencia de `usesTailwindV4`, `usesCustomCSS`,
+  `newDependencies` e `dependenciesJustified`.
+
+## Gates obrigatorios
+- `node scripts/policy-check.js reports/{date}.report.json`
+- `node scripts/lint-gate.js`
+- `node scripts/test-gate.js`
+- Opcional: `node scripts/run-gates.js reports/{date}.report.json`
+
+## Exemplo para copiar/colar
+```
+node scripts/policy-check.js reports/{date}.report.json
+node scripts/lint-gate.js
+node scripts/test-gate.js
+```
+
+## Regra de commit
+- Nao seguir para commit com violacoes.

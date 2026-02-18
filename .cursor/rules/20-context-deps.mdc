@@ -1,0 +1,16 @@
+---
+description: Regras para dependencias e report
+globs:
+  - "**/package.json"
+  - "**/package-lock.json"
+  - "**/pnpm-lock.yaml"
+  - "**/yarn.lock"
+  - "**/reports/*.report.json"
+---
+
+# Dependencias e report (inteligente)
+
+- Se adicionar dependencias, registre em `reports/{date}.report.json`:
+  - `newDependencies`
+  - `dependenciesJustified`
+- Confirme que `usesTailwindV4` e `usesCustomCSS` estao corretos.

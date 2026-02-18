@@ -1,0 +1,34 @@
+---
+description: Regras para UI e layout
+globs:
+  - "**/*.{tsx,jsx,html,mdx}"
+---
+
+# UI e layout (por contexto)
+
+## Sistema de design travado
+- Nao inventar estilos, layouts ou tokens.
+- Nao inventar cores.
+- Nao alterar tipografia.
+- Nao quebrar o grid (sistema 8pt).
+- Se houver duvida, reutilize o padrao default.
+
+## Regras por Template
+
+### Template Tailwind
+- Usar apenas classes Tailwind
+- Ver detalhes em `70-design-system-tailwind.mdc`
+
+### Template MUI
+- Usar apenas componentes MUI
+- Respeitar regras de licenciamento do template ativo (incluindo overrides locais)
+- Ver detalhes em `71-design-system-mui.mdc`
+
+## Heuristicas
+- Reduza carga cognitiva.
+- Priorize padroes comuns.
+- Se houver mais de uma opcao, escolha a mais padrao.
+
+## Prompt fixo
+- Verifique `policy.json` para saber o template.
+- Reaplique estas regras ao gerar UI.

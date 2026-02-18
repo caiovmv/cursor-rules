@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mui-pro-app
+  labels:
+    app: mui-pro-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mui-pro-app
+  template:
+    metadata:
+      labels:
+        app: mui-pro-app
+    spec:
+      containers:
+        - name: web
+          image: ghcr.io/example/mui-pro-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4173
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: APP_ENV
+              value: rc
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 4173
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 4173
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

@@ -1,0 +1,24 @@
+---
+description: Regras para API e requests
+globs:
+  - "**/src/services/**/*.{ts,tsx,js,jsx}"
+  - "**/src/api/**/*.{ts,tsx,js,jsx}"
+  - "**/src/lib/**/*.{ts,tsx,js,jsx}"
+  - "**/src/hooks/**/*.{ts,tsx,js,jsx}"
+---
+
+# API e requests (por contexto)
+
+- Centralize chamadas em services/api ou hooks.
+- Evite chamadas diretas na UI de pagina.
+- Padronize erros e estados de loading.
+- Reutilize clients e funcoes utilitarias em `src/lib`.
+
+## Cache de API (deterministico)
+
+- Toda estrategia de cache deve usar **event-driven eviction** baseado em eventos dos endpoints:
+  - `create` invalida chaves/listas relacionadas ao recurso criado.
+  - `update` invalida chaves do item e colecoes relacionadas.
+  - `delete` (hard ou soft) invalida chaves do item e colecoes relacionadas.
+- O cache deve aplicar um **TTL padrao de 5 minutos** como failsafe, mesmo com eviction por evento.
+- Ordem recomendada: primeiro eviction por evento, depois repovoamento por leitura.

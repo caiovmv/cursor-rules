@@ -1,0 +1,25 @@
+---
+description: Regras para tema e design tokens
+globs:
+  - "**/src/theme/**/*.{ts,tsx,js,jsx}"
+  - "**/src/themes/**/*.{ts,tsx,js,jsx}"
+  - "**/src/tokens/**/*.{ts,tsx,js,jsx}"
+  - "**/tailwind.config.{ts,js}"
+---
+
+# Tema e tokens (por contexto)
+
+## Regras Gerais
+- Nao crie tokens novos sem aprovacao.
+- Mantenha alinhamento com o design system.
+- Reuse tokens existentes.
+
+## Template Tailwind
+- Tokens em `tailwind.config.ts`
+- Cores, espacamentos, tipografia via Tailwind
+
+## Template MUI
+- Tema em `src/themes/`
+- Usar `createTheme` do MUI
+- Overrides em `src/themes/overrides/`
+- Paleta, tipografia, sombras via theme

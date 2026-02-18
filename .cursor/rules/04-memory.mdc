@@ -1,0 +1,43 @@
+---
+description: Memoria e continuidade
+globs:
+  - "**/*"
+---
+
+# Memoria e continuidade (sempre aplicavel)
+
+## Principios
+- Se algo precisar ser lembrado, registre em arquivo.
+- Evite confiar em memoria de sessao.
+- Arquivos sao a fonte de continuidade.
+
+## Como usar memoria
+- Use notas diarias quando precisar registrar eventos ou decisoes.
+- Mantenha uma memoria de longo prazo com o que for realmente importante.
+- Revise notas recentes e consolide o que importa na memoria longa.
+
+## Boas praticas
+- Registre aprendizados e decisoes relevantes.
+- Evite guardar segredos se nao foi solicitado.
+
+## Leitura obrigatoria por sessao
+- Leia `memory/YYYY-MM-DD.md` (hoje e ontem) para contexto recente.
+- Se estiver em sessao principal (chat direto com o humano), leia `MEMORY.md`.
+- Nao pedir permissao. Apenas faca.
+
+## Estrutura de memoria
+- Notas diarias: `memory/YYYY-MM-DD.md` (crie `memory/` se preciso).
+- Longo prazo: `MEMORY.md` (memoria curada).
+
+## Regras para MEMORY.md
+- Leia apenas em sessao principal.
+- Nao leia em contextos compartilhados.
+- Pode ler/editar/atualizar livremente na sessao principal.
+- Registre eventos, decisoes, opinioes e aprendizados importantes.
+- Reavalie notas diarias e consolide no longo prazo.
+
+## Sem notas mentais
+- Se precisar lembrar, escreva em arquivo.
+- Quando alguem disser "lembre isso", atualize `memory/YYYY-MM-DD.md`.
+- Quando aprender uma licao, registre no arquivo relevante.
+- Quando cometer um erro, documente para nao repetir.

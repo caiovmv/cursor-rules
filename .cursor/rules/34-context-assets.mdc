@@ -1,0 +1,11 @@
+---
+description: Regras para assets
+globs:
+  - "**/src/assets/**/*"
+---
+
+# Assets (por contexto)
+
+- Use assets somente quando necessario.
+- Prefira SVGs otimizados e sem estilos embutidos.
+- Evite duplicar arquivos semelhantes.

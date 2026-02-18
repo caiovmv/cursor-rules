@@ -1,0 +1,15 @@
+{
+  "name": "react-vite-tailwind",
+  "version": "1.0.0",
+  "channel": "enterprise",
+  "defaultPolicy": "tailwind",
+  "supportedPolicyVersions": [
+    "free"
+  ],
+  "includes": {
+    "qualityGates": true,
+    "ciWorkflow": false,
+    "kubernetesDeploy": false,
+    "productSkeleton": true
+  }
+}

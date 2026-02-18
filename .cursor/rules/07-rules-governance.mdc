@@ -1,0 +1,45 @@
+---
+description: Governanca e evolucao das regras
+globs:
+  - ".cursor/rules/**/*"
+alwaysApply: false
+---
+
+# Governanca das Regras
+
+## Objetivo
+
+Padronizar evolucao, deprecacao e manutencao das regras para evitar conflitos e ambiguidade.
+
+## Convencao de numeracao
+
+- `00-09`: base, governanca e workflow global
+- `10-59`: regras por contexto tecnico
+- `60-69`: operacao de projeto (scaffolding, quality gates, dependencias)
+- `70-79`: design system e arquitetura estrutural
+
+## Fonte unica de verdade
+
+- Evite duplicar a mesma norma em arquivos diferentes.
+- Quando houver regra base, referencie o arquivo fonte em vez de copiar texto.
+
+## Evolucao de regra
+
+Ao alterar uma regra existente:
+1. Explicar o motivo da mudanca no commit/entrega.
+2. Verificar impactos em regras relacionadas.
+3. Atualizar exemplos que ficarem desatualizados.
+
+## Deprecacao de regra
+
+- Regras antigas devem ser marcadas com secao `## Deprecada` e instruir para qual regra migrar.
+- Evite remover regra abruptamente quando ainda existir referencia cruzada ativa.
+
+## Checklist minimo antes de publicar regra nova
+
+- [ ] Nao conflita com `00-global.mdc`, `05-workflow.mdc`, `06-planning.mdc`
+- [ ] Define claramente quando aplica
+- [ ] Possui exemplos validos e atuais
+- [ ] Referencias de arquivo existem
+- [ ] Nao duplica regra ja existente
+- [ ] Passa em `node scripts/validate-rules.js`

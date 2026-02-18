@@ -1,0 +1,192 @@
+---
+description: Regras obrigatorias para planejamento de projetos
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# Regras de Planejamento
+
+> CRITICO: Esta regra deve ser seguida SEMPRE que o usuario pedir para planejar, criar um plano, desenvolver um novo sistema, ou qualquer atividade de planejamento.
+
+## Gatilhos de Ativacao
+
+Detecte pedidos como:
+- "Planeje o desenvolvimento..."
+- "Crie um plano para..."
+- "Quero desenvolver um sistema de..."
+- "Planejamento de..."
+- "Como implementar..."
+- Qualquer pedido que envolva criar algo novo ou planejar uma implementacao
+
+---
+
+## Leitura Obrigatoria ANTES de Planejar
+
+Ao receber um pedido de planejamento, LEIA OBRIGATORIAMENTE os seguintes arquivos na ordem indicada:
+
+### 0. Validar fase de especificacao
+
+Confirme se a fase de especificacao ja foi executada em `.cursor/spec/` usando o modelo oficial:
+- `RF-XX-FUNCIONAL.md`
+- `RF-XX-UX.md`
+- `RF-XX-AI.md`
+
+Se ainda nao existir especificacao minima, pare e solicite a etapa de especificacao antes de prosseguir com o planejamento.
+
+### 1. Identificar o Template (PRIMEIRO)
+
+Leia `policy.json` do projeto/template para identificar:
+- `template`: "react-vite-mui" ou "react-vite-tailwind"
+- `version`: "free" ou "pro"
+- Baseline recomendado para esta plataforma: `react-vite-mui` + `pro`
+
+### 2. Regras Globais
+
+| Arquivo | Proposito |
+|---------|-----------|
+| `00-global.mdc` | Regras absolutas, templates disponiveis |
+| `05-workflow.mdc` | Checklist, reports, gates obrigatorios |
+
+### 3. Regras de Projeto
+
+| Arquivo | Proposito |
+|---------|-----------|
+| `60-scaffolding.mdc` | Como criar novos projetos (script obrigatorio) |
+| `61-quality-gates.mdc` | Gates de qualidade antes de commit |
+| `62-dependency-updates.mdc` | Como atualizar dependencias |
+
+### 4. Design System (conforme template)
+
+| Se Template | Ler Arquivo |
+|-------------|-------------|
+| react-vite-tailwind | `70-design-system-tailwind.mdc` |
+| react-vite-mui | `71-design-system-mui.mdc` |
+
+### 5. Arquitetura Obrigatoria
+
+| Arquivo | Proposito |
+|---------|-----------|
+| `72-product-skeleton.mdc` | 17 modulos estruturais obrigatorios |
+
+---
+
+## Checklist de Planejamento
+
+Antes de apresentar o plano, verifique:
+
+- [ ] A fase de especificacao foi concluida antes do planejamento
+- [ ] As specs do requisito existem em `.cursor/spec/` no formato RF-XX (FUNCIONAL, UX, AI)
+- [ ] Li `policy.json` e identifiquei template e versao
+- [ ] Li as regras globais (00, 05)
+- [ ] Li as regras de projeto (60, 61, 62)
+- [ ] Li o design system correto (70 ou 71)
+- [ ] Li o product skeleton (72)
+- [ ] O plano inclui TODOS os 17 modulos do Product Skeleton
+- [ ] O plano usa APENAS componentes permitidos pelas regras do template ativo
+- [ ] O plano segue a estrutura de pastas `src/features/`
+- [ ] O plano menciona os gates de qualidade
+- [ ] O plano nao usa tecnologias proibidas (ex: Tailwind em MUI, MUI em Tailwind)
+- [ ] O plano descreve estrategia de automacao de report e gates (local e CI)
+
+---
+
+## Estrutura do Plano
+
+Todo plano deve conter:
+
+### 1. Cabecalho
+- Regras aplicaveis identificadas
+- Template e versao em uso
+- Tecnologias proibidas listadas
+
+### 2. Arquitetura
+- Diagrama de modulos (mermaid)
+- Estrutura de pastas completa
+
+### 3. Product Skeleton (Obrigatorio)
+Detalhar TODOS os 17 modulos estruturais definidos em `72-product-skeleton.mdc` (fonte unica de verdade).
+
+### 4. Modulos Core
+Especificos do negocio/dominio
+
+### 5. Ordem de Implementacao
+Seguir a ordem do Product Skeleton:
+1. Fase 1: Fundacao (Identity, Security, Terms)
+2. Fase 2: Operacional (Preferences, Notifications, Help)
+3. Fase 3: Colaboracao (Sharing, Upload)
+4. Fase 4: Monetizacao (Licensing, Billing, Payments)
+5. Fase 5: Compliance (Audit, Consent, Privacy)
+6. Fase 6: Extras (Support, AI Chat)
+7. Fase 7+: Modulos Core do negocio
+
+### 6. Antipadroes
+Listar o que NAO fazer (baseado no design system)
+
+### 7. Checklist Final
+Baseado no design system em uso
+
+---
+
+## Regras de Execucao
+
+### Novo Projeto
+Se for criar um novo projeto, use OBRIGATORIAMENTE o script de scaffolding:
+
+```powershell
+# Windows
+.\scripts\create-project.ps1 -AppName "<nome>" -Template "<template>" -Version "<versao>"
+```
+
+```bash
+# Linux/Mac
+./scripts/create-project.sh "<nome>" "." "<template>" "<versao>"
+```
+
+NUNCA crie a estrutura de pastas manualmente.
+
+### Projeto Existente
+Se for adicionar a um projeto existente:
+1. Verifique `policy.json` para confirmar template/versao
+2. Siga as regras do template
+3. Gere/atualize o report automaticamente com `node scripts/generate-report.js`
+4. Valide com `node scripts/run-gates.js`
+
+---
+
+## Antipadroes de Planejamento
+
+0. Planejar sem fase de especificacao previa
+1. Planejar sem ler as regras
+2. Ignorar o Product Skeleton
+3. Ignorar regras de licenciamento do template ativo
+4. Misturar tecnologias proibidas
+5. Criar estrutura de pastas manualmente
+6. Nao mencionar gates de qualidade
+7. Planejar apenas modulos core, ignorando estrutura
+8. Tratar report como etapa manual quando o projeto possui automacao disponivel
+
+---
+
+## Exemplo de Inicio de Planejamento
+
+```
+Antes de criar o plano, vou ler as regras obrigatorias:
+
+1. Verificando policy.json... Template: react-vite-mui, Versao: free
+2. Lendo 00-global.mdc... [regras absolutas identificadas]
+3. Lendo 05-workflow.mdc... [gates obrigatorios identificados]
+4. Lendo 60-scaffolding.mdc... [script de criacao identificado]
+5. Lendo 71-design-system-mui.mdc... [componentes permitidos identificados]
+6. Lendo 72-product-skeleton.mdc... [17 modulos estruturais identificados]
+
+Agora posso criar o plano completo.
+```
+
+---
+
+## Regra Final
+
+> Planejar sem ler as regras e como construir sem planta.
+> O plano deve refletir 100% das regras aplicaveis.
+> Se uma regra existe, ela deve estar no plano.

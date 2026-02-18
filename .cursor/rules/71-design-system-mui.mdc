@@ -1,0 +1,317 @@
+---
+description: Design System - Template React + MUI (Mantis)
+globs:
+  - "**/*.{tsx,jsx,ts,js}"
+---
+
+# Design System — React + MUI (Mantis)
+
+> Aplica-se quando `policy.json` tiver `template: "react-vite-mui"`.
+> Baseado na lista oficial de componentes do Material UI (Free) e MUI X (Paid).
+
+## Regra local de licenciamento MUI X (override)
+
+Para este projeto, os componentes pagos do ecossistema MUI X estao **liberados sem restricoes**.
+
+- Pode usar componentes MUI X (incluindo Data Grid, Date Pickers e Charts avancados) sem bloqueio por `free/pro`.
+- Esta regra tem precedencia sobre restricoes anteriores de versao para componentes MUI X.
+- Ao implementar, priorize componente oficial MUI/MUI X em vez de alternativas customizadas.
+
+---
+
+## Verificacao de Template e Versao
+
+Antes de aplicar estas regras, verifique `policy.json`:
+```json
+{ 
+  "template": "react-vite-mui",
+  "version": "free"  // ou "pro"
+}
+```
+
+- `version` em `policy.json` deve ser mantida para compatibilidade de metadata e tooling.
+- Para este workspace, componentes MUI X pagos estao liberados sem restricao (override local desta regra).
+
+Se o template for `react-vite-tailwind`, consulte `70-design-system-tailwind.mdc`.
+
+---
+
+## Stack Obrigatoria
+
+- React 19+
+- Vite
+- @mui/material v7
+- @mui/icons-material
+- @emotion/react, @emotion/styled
+
+### Pacotes MUI X recomendados:
+- @mui/x-data-grid-pro
+- @mui/x-date-pickers-pro
+- @mui/x-charts-pro
+
+### Proibido (ambas versoes):
+- Tailwind CSS
+- styled-components (usar @emotion)
+- CSS customizado fora do theme
+- Emojis em UI ou codigo
+
+---
+
+## Tema e Tokens
+
+### ThemeProvider
+
+- Um unico `ThemeProvider` na raiz
+- Usar `createTheme` do MUI
+- Configuracao em `src/themes/`
+
+### Tokens obrigatorios
+
+```javascript
+createTheme({
+  palette: {
+    primary: { main: '#1677ff' },
+    secondary: { main: '#8c8c8c' },
+    error: { main: '#ff4d4f' },
+    warning: { main: '#faad14' },
+    success: { main: '#52c41a' },
+    info: { main: '#1677ff' }
+  },
+  typography: {
+    fontFamily: '"Public Sans", sans-serif'
+  }
+})
+```
+
+### Tipografia
+
+- Maximo 3 fontes
+- Padrao Mantis: Public Sans
+- Alternativas: Inter, Roboto
+
+---
+
+## Layout e Estrutura
+
+| Componente | Uso |
+|------------|-----|
+| `Box` | Container flexivel |
+| `Container` | Largura maxima centralizada |
+| `Paper` | Superficie elevada |
+| `Stack` | Layout com gap |
+| `Grid` | Layout responsivo |
+| `Divider` | Separador visual |
+
+Sistema 8pt obrigatorio (spacing do MUI ja segue).
+
+---
+
+## Navegacao
+
+| Funcionalidade | Componente |
+|----------------|------------|
+| App Bar | `AppBar`, `Toolbar` |
+| Sidebar | `Drawer` (persistent) |
+| Breadcrumb | `Breadcrumbs` |
+| Tabs | `Tabs`, `Tab` |
+| Stepper | `Stepper`, `Step`, `StepLabel` |
+
+### Regras de Sidebar
+- Desktop: aberta por padrao
+- Mobile: fechada por padrao
+- Modo recolhido: icones + Tooltip
+
+---
+
+## Avatar e Menus
+
+| Componente | Uso |
+|------------|-----|
+| `Avatar` | Foto/iniciais |
+| `Menu` | Dropdown |
+| `MenuItem` | Item do menu |
+| `IconButton` | Botao com icone |
+| `Badge` | Indicador |
+
+### Menu do Avatar (estrutura padrao)
+
+```jsx
+<Menu>
+  <MenuItem>Minha Conta</MenuItem>
+  <MenuItem>Mudar de Conta</MenuItem>
+  <MenuItem>Sair</MenuItem>
+  <Divider />
+  <MenuItem>Tema</MenuItem>
+  <MenuItem>Idioma</MenuItem>
+  <MenuItem>Configuracoes</MenuItem>
+  <Divider />
+  <MenuItem>Ajuda</MenuItem>
+</Menu>
+```
+
+---
+
+## Formularios
+
+### Inputs Basicos
+
+| Componente | Uso |
+|------------|-----|
+| `TextField` | Input de texto |
+| `Select` | Dropdown |
+| `Checkbox` | Selecao multipla |
+| `Radio`, `RadioGroup` | Selecao unica |
+| `Switch` | Toggle |
+| `Slider` | Range |
+| `Autocomplete` | Input com sugestoes |
+
+### Datas e Tempo
+
+#### Opcao basica:
+- `TextField` com `type="date"` ou `type="datetime-local"`
+
+#### Opcao avancada (MUI X):
+| Componente | Uso |
+|------------|-----|
+| `DatePicker` | Data |
+| `DateTimePicker` | Data e hora |
+| `DateRangePicker` | Intervalo |
+| `TimePicker` | Hora |
+
+---
+
+## Data Display
+
+| Componente | Uso |
+|------------|-----|
+| `Typography` | Textos |
+| `List`, `ListItem` | Listas |
+| `Chip` | Tags |
+| `Tooltip` | Dicas |
+| `Badge` | Indicadores |
+| `Skeleton` | Loading |
+
+---
+
+## Tabelas
+
+### Simples
+
+| Componente |
+|------------|
+| `Table` |
+| `TableHead` |
+| `TableBody` |
+| `TableRow` |
+| `TableCell` |
+| `TablePagination` |
+
+Usar para: tabelas estaticas, menos de 50 linhas.
+
+### Profissionais (MUI X)
+
+Se precisar de virtualizacao, filtros, agrupamento:
+
+| Componente | Recursos |
+|------------|----------|
+| `DataGridPro` | Filtros, sorting, paginacao |
+| `DataGridPremium` | + Grouping, Excel export |
+
+---
+
+## Graficos
+
+### Basico (@mui/x-charts)
+
+| Componente |
+|------------|
+| `LineChart` |
+| `BarChart` |
+| `PieChart` |
+
+### Avancado (@mui/x-charts-pro)
+
+Recursos: zoom, tooltips avancados, large datasets.
+
+---
+
+## Feedback
+
+| Componente | Uso |
+|------------|-----|
+| `Alert` | Mensagens inline |
+| `Snackbar` | Notificacoes |
+| `Dialog` | Modais |
+| `CircularProgress` | Loading |
+| `LinearProgress` | Loading linear |
+
+### Acoes Destrutivas
+
+Sempre usar Dialog de confirmacao:
+```jsx
+<Dialog>
+  <DialogTitle>Confirmar exclusao</DialogTitle>
+  <DialogContent>Esta acao nao pode ser desfeita.</DialogContent>
+  <DialogActions>
+    <Button autoFocus>Cancelar</Button>
+    <Button color="error">Excluir</Button>
+  </DialogActions>
+</Dialog>
+```
+
+---
+
+## Imports MUI X (permitidos neste projeto)
+
+```javascript
+// Permitidos pelo override local deste projeto:
+import { DataGridPro } from '@mui/x-data-grid-pro';
+import { DataGridPremium } from '@mui/x-data-grid-premium';
+import { DatePicker } from '@mui/x-date-pickers-pro';
+import { DateRangePicker } from '@mui/x-date-pickers-pro';
+import { DateTimePicker } from '@mui/x-date-pickers-pro';
+import '@mui/x-charts-pro';
+```
+
+---
+
+## Referencia de Exemplos
+
+Consulte `examples/` para padroes visuais:
+- Dashboard: `examples/pages/dashboard/`
+- Auth: `examples/sections/auth/`
+- Componentes: `src/components/`
+
+---
+
+## Antipadroes
+
+1. Emojis em UI
+2. Tailwind CSS
+3. CSS fora do theme
+4. Recriar componentes MUI
+5. Ignorar o override local de MUI X sem restricoes
+6. Icones sem funcao
+
+---
+
+## Checklist
+
+- [ ] Componentes oficiais MUI
+- [ ] Override local de MUI X sem restricoes respeitado
+- [ ] Tema do MUI utilizado
+- [ ] Tipografia com Typography
+- [ ] Sidebar padrao Mantis
+- [ ] Acoes destrutivas com Dialog
+- [ ] Sem emojis
+- [ ] Sem Tailwind
+
+---
+
+## Regra Final
+
+> Se existir componente oficial MUI: USE-O.
+> Neste projeto, componentes MUI X podem ser usados sem restricoes.
+> Priorize componente oficial MUI/MUI X quando agregar valor.
+
+Frontend maduro nao improvisa — orquestra.

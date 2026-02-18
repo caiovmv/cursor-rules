@@ -1,0 +1,273 @@
+---
+description: Regras para investigar e atualizar dependencias mantendo compatibilidade
+globs:
+  - package.json
+  - package-lock.json
+  - yarn.lock
+alwaysApply: false
+---
+
+# Atualizacao de Dependencias
+
+## Politica de Versionamento
+
+Seguir **Semantic Versioning (SemVer)**: `MAJOR.MINOR.PATCH`
+
+### Regra de Atualizacao
+
+| Tipo | Permitido | Exemplo |
+|------|-----------|---------|
+| MAJOR | NAO | 19.x.x → 20.x.x |
+| MINOR | SIM | 19.1.x → 19.2.x |
+| PATCH | SIM | 19.1.9 → 19.1.50 |
+
+**IMPORTANTE**: Manter a mesma MAJOR version para nao quebrar o projeto.
+
+## Versao do Node.js
+
+Usar sempre a **ultima versao LTS (Long Term Support)** do Node.js.
+
+### Verificar Versao LTS Atual
+
+```bash
+# Ver versao instalada
+node --version
+
+# Ver versoes LTS disponiveis (via nvm)
+nvm ls-remote --lts
+
+# Instalar ultima LTS (via nvm)
+nvm install --lts
+nvm use --lts
+```
+
+### Politica de Node.js
+
+| Tipo | Versao | Usar |
+|------|--------|------|
+| LTS (Active) | Par (22, 24, 26...) | SIM |
+| Current | Impar (23, 25, 27...) | NAO |
+
+### Configurar no Projeto
+
+Adicionar no `package.json`:
+
+```json
+{
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
+```
+
+Criar arquivo `.nvmrc` na raiz:
+
+```
+lts/*
+```
+
+### Links Uteis
+
+- [Node.js Releases](https://nodejs.org/en/about/releases/)
+- [Node.js Schedule](https://github.com/nodejs/release#release-schedule)
+
+## Quando Executar
+
+- Antes de iniciar novo sprint
+- Ao receber alerta de seguranca (npm audit)
+- Quando solicitado pelo usuario
+- Mensalmente (manutencao preventiva)
+
+## Procedimento de Investigacao
+
+### 1. Listar Dependencias Desatualizadas
+
+```bash
+# Ver todas as dependencias desatualizadas
+npm outdated
+
+# Formato: Package | Current | Wanted | Latest | Location
+```
+
+### 2. Verificar Versao Especifica
+
+```bash
+# Ver todas as versoes disponiveis de um pacote
+npm view <pacote> versions --json
+
+# Ver ultima versao
+npm view <pacote> version
+```
+
+### 3. Analisar Compatibilidade
+
+Para cada dependencia desatualizada:
+
+1. Verificar a versao atual no `package.json`
+2. Identificar a MAJOR version atual
+3. Buscar a ultima MINOR.PATCH dentro da mesma MAJOR
+4. Verificar changelog/breaking changes
+
+### 4. Atualizar Seletivamente
+
+```bash
+# Atualizar para versao especifica (seguro)
+npm install <pacote>@<major>.<latest-minor>.<latest-patch>
+
+# Exemplo: atualizar react de 19.1.9 para 19.1.50
+npm install react@19.1.50
+```
+
+## Dependencias Criticas (Template MUI)
+
+### Core React
+
+| Pacote | Major Fixa | Notas |
+|--------|------------|-------|
+| react | 19 | Manter 19.x.x |
+| react-dom | 19 | Igual ao react |
+| react-router-dom | 7 | Manter 7.x.x |
+
+### Material UI
+
+| Pacote | Major Fixa | Notas |
+|--------|------------|-------|
+| @mui/material | 7 | Manter 7.x.x |
+| @mui/icons-material | 7 | Igual ao material |
+| @mui/x-data-grid | 7 | Manter 7.x.x |
+| @mui/x-date-pickers | 7 | Manter 7.x.x |
+| @mui/x-charts | 7 | Manter 7.x.x |
+
+### Build Tools
+
+| Pacote | Major Fixa | Notas |
+|--------|------------|-------|
+| vite | 6 | Manter 6.x.x |
+| typescript | 5 | Manter 5.x.x |
+| eslint | 9 | Manter 9.x.x |
+
+### Formularios
+
+| Pacote | Major Fixa | Notas |
+|--------|------------|-------|
+| formik | 2 | Manter 2.x.x |
+| yup | 1 | Manter 1.x.x |
+
+## Dependencias Criticas (Template Tailwind)
+
+### Core
+
+| Pacote | Major Fixa | Notas |
+|--------|------------|-------|
+| react | 19 | Manter 19.x.x |
+| react-dom | 19 | Igual ao react |
+| tailwindcss | 4 | Manter 4.x.x |
+| vite | 6 | Manter 6.x.x |
+| typescript | 5 | Manter 5.x.x |
+
+## Script de Verificacao
+
+Ao investigar dependencias, gerar relatorio:
+
+```markdown
+## Relatorio de Dependencias - YYYY-MM-DD
+
+### Atualizacoes Seguras (mesma MAJOR)
+
+| Pacote | Atual | Disponivel | Acao |
+|--------|-------|------------|------|
+| react | 19.1.9 | 19.1.50 | Atualizar |
+| @mui/material | 7.0.1 | 7.2.3 | Atualizar |
+
+### Atualizacoes Bloqueadas (MAJOR diferente)
+
+| Pacote | Atual | Disponivel | Motivo |
+|--------|-------|------------|--------|
+| react | 19.1.50 | 20.0.0 | Major change |
+
+### Acoes Recomendadas
+
+1. npm install react@19.1.50
+2. npm install @mui/material@7.2.3
+```
+
+## Comandos Uteis
+
+```bash
+# Verificar vulnerabilidades
+npm audit
+
+# Corrigir vulnerabilidades automaticamente (cuidado)
+npm audit fix
+
+# Ver arvore de dependencias
+npm ls
+
+# Ver dependencias de um pacote
+npm ls <pacote>
+
+# Limpar cache
+npm cache clean --force
+
+# Reinstalar dependencias
+rm -rf node_modules package-lock.json && npm install
+```
+
+## Fluxo de Atualizacao
+
+```
+1. npm outdated
+   ↓
+2. Filtrar por MAJOR compativel
+   ↓
+3. Verificar changelog de cada pacote
+   ↓
+4. Atualizar um por um
+   ↓
+5. npm install
+   ↓
+6. npm run build (verificar se compila)
+   ↓
+7. npm test (verificar se testes passam)
+   ↓
+8. Testar manualmente features criticas
+   ↓
+9. Commitar com mensagem descritiva
+```
+
+## Mensagem de Commit
+
+```
+chore(deps): atualizar dependencias (YYYY-MM-DD)
+
+Atualizacoes:
+- react: 19.1.9 → 19.1.50
+- @mui/material: 7.0.1 → 7.2.3
+
+Nenhuma breaking change. Testes passando.
+```
+
+## Antipadroes
+
+- NAO usar `npm update` sem verificar (pode subir MAJOR)
+- NAO usar `^` ou `~` em producao (preferir versoes fixas)
+- NAO atualizar todas as deps de uma vez
+- NAO ignorar avisos de peer dependencies
+- NAO atualizar sem rodar testes
+
+## Checklist Pre-Atualizacao
+
+- [ ] Verificar branch limpa (sem alteracoes pendentes)
+- [ ] Backup do package-lock.json
+- [ ] npm outdated executado
+- [ ] Changelog verificado para cada pacote
+- [ ] Testes passando antes da atualizacao
+
+## Checklist Pos-Atualizacao
+
+- [ ] npm install sem erros
+- [ ] npm run build sem erros
+- [ ] npm test passando
+- [ ] Aplicacao inicia corretamente
+- [ ] Features criticas funcionando
+- [ ] Commit criado com lista de atualizacoes

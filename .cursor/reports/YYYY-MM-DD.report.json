@@ -1,0 +1,12 @@
+{
+  "date": "YYYY-MM-DD",
+  "template": "react-vite-mui",
+  "version": "pro",
+  "usesTailwindV4": true,
+  "usesMUI": true,
+  "usesCustomCSS": false,
+  "usesMUIProComponents": false,
+  "newDependencies": [],
+  "dependenciesJustified": true,
+  "notes": ""
+}

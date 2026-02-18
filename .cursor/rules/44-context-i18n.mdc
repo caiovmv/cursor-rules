@@ -1,0 +1,12 @@
+---
+description: Regras para i18n
+globs:
+  - "**/src/i18n/**/*"
+  - "**/src/locales/**/*"
+---
+
+# i18n (por contexto)
+
+- Centralize strings em arquivos de locale.
+- Evite hardcode de texto na UI.
+- Reuse chaves e mantenha nomenclatura consistente.

@@ -1,0 +1,11 @@
+---
+description: Regras para hooks
+globs:
+  - "**/src/hooks/**/*.{ts,tsx,js,jsx}"
+---
+
+# Hooks (por contexto)
+
+- Um hook deve ter uma unica responsabilidade.
+- Evite efeitos colaterais ocultos.
+- Padronize nomes com prefixo `use`.

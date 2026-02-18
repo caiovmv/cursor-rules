@@ -1,0 +1,84 @@
+---
+description: Regras para execução de quality gates
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Quality Gates
+
+Execute os quality gates automaticamente em momentos específicos.
+
+## Quando Executar
+
+### Antes de Commitar
+Quando o usuário pedir para commitar ou finalizar uma feature:
+```bash
+node scripts/generate-report.js
+node scripts/run-gates.js
+```
+
+### Após Mudanças Significativas
+Após implementar uma feature completa, valide o código:
+```bash
+node scripts/generate-report.js
+node scripts/policy-check.js --scan-imports
+node scripts/lint-gate.js
+```
+
+### Antes de Entregar (Template MUI)
+Quando o usuário indicar que o projeto está pronto:
+```bash
+node scripts/remove-examples.js
+```
+
+## Gates Disponíveis
+
+| Gate | Comando | Propósito |
+|------|---------|-----------|
+| Policy | `node scripts/policy-check.js <report>` | Valida regras do template |
+| Policy + Imports | `node scripts/policy-check.js <report> --scan-imports` | Inclui scan de imports proibidos |
+| Lint | `node scripts/lint-gate.js` | ESLint |
+| Test | `node scripts/test-gate.js` | Vitest |
+| Todos | `node scripts/run-gates.js <report>` | Executa todos |
+
+## Report de Qualidade
+
+Antes de executar gates, atualize o report do dia:
+- Arquivo: `reports/{date}.report.json`
+- Onde `{date}` = data atual no formato `YYYY-MM-DD`
+- Comando recomendado: `node scripts/generate-report.js`
+
+### Campos do Report
+
+```json
+{
+  "date": "2025-01-30",
+  "template": "react-vite-mui",
+  "version": "pro",
+  "usesTailwindV4": false,
+  "usesMUI": true,
+  "usesCustomCSS": false,
+  "usesMUIProComponents": false,
+  "newDependencies": [],
+  "dependenciesJustified": true,
+  "notes": ""
+}
+```
+
+## Fluxo de Correção
+
+Se um gate falhar:
+1. Leia a mensagem de erro
+2. Corrija o problema
+3. Execute o gate novamente
+4. Repita até passar
+
+## Exemplo
+
+**Usuário**: "Commit as mudanças"
+
+**Agente**:
+1. Atualiza report automaticamente (`node scripts/generate-report.js`)
+2. Executa `node scripts/run-gates.js`
+3. Se falhar, corrige e re-executa
+4. Se passar, faz o commit

@@ -1,0 +1,24 @@
+---
+description: Regras para estilos
+globs:
+  - "**/src/styles/**/*"
+  - "**/src/themes/**/*"
+  - "**/*.{css,scss,sass,less}"
+---
+
+# Estilos (por contexto)
+
+## Regras por Template
+
+### Template Tailwind
+- Usar apenas classes utilitarias do Tailwind
+- Nao criar arquivos CSS customizados
+- Configuracao em `tailwind.config.ts`
+
+### Template MUI
+- Usar sistema de theming do MUI (`sx` prop, `styled`)
+- Configuracao em `src/themes/`
+- Nao usar Tailwind
+
+## Regra Geral
+- Se um arquivo de estilo existir, nao adicione novas regras sem justificar no `reports/{date}.report.json`.

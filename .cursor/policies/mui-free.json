@@ -1,0 +1,20 @@
+{
+  "template": "react-vite-mui",
+  "version": "free",
+  "rules": {
+    "mui_required": true,
+    "mui_pro_components_forbidden": true,
+    "tailwind_forbidden": true,
+    "only_free_components": true,
+    "dependencies_require_justification": true
+  },
+  "forbidden_imports": [
+    "@mui/x-data-grid-pro",
+    "@mui/x-data-grid-premium",
+    "@mui/x-date-pickers-pro",
+    "@mui/x-charts-pro",
+    "@mui/x-tree-view-pro",
+    "tailwindcss"
+  ],
+  "notes": "Template MUI Free - usar apenas componentes gratuitos do MUI"
+}

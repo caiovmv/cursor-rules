@@ -1,0 +1,13 @@
+---
+description: Regras para paginas e rotas
+globs:
+  - "**/src/pages/**/*.{ts,tsx,js,jsx}"
+  - "**/src/routes/**/*.{ts,tsx,js,jsx}"
+  - "**/src/app/**/*.{ts,tsx,js,jsx}"
+---
+
+# Paginas e rotas (por contexto)
+
+- Mantenha a pagina focada no fluxo principal.
+- Orquestre componentes; evite logica complexa na pagina.
+- Garanta hierarquia visual previsivel e leitura rapida.

@@ -1,0 +1,11 @@
+---
+description: Regras para validacao
+globs:
+  - "**/src/validators/**/*.{ts,tsx,js,jsx}"
+---
+
+# Validacao (por contexto)
+
+- Centralize regras de validacao.
+- Prefira schemas e validacao consistente.
+- Evite duplicar regras em componentes.

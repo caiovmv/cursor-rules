@@ -1,0 +1,11 @@
+---
+description: Regras para constantes
+globs:
+  - "**/src/constants/**/*.{ts,tsx,js,jsx}"
+---
+
+# Constantes (por contexto)
+
+- Centralize valores fixos e enums aqui.
+- Evite valores magicos espalhados pelo codigo.
+- Mantenha nomenclatura consistente.

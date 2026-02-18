@@ -1,0 +1,12 @@
+---
+description: Regras para estado e store
+globs:
+  - "**/src/store/**/*.{ts,tsx,js,jsx}"
+  - "**/src/state/**/*.{ts,tsx,js,jsx}"
+---
+
+# Estado e store (por contexto)
+
+- Centralize estado compartilhado no store.
+- Evite estado global sem necessidade real.
+- Prefira selectors e actions pequenas.

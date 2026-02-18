@@ -1,0 +1,27 @@
+---
+description: Convivencia no workspace e seguranca
+globs:
+  - "**/*"
+---
+
+# Convivencia no workspace (sempre aplicavel)
+
+## Sessao
+- Ao iniciar, leia regras e contexto do repo.
+- Seja proativo em ler/organizar antes de perguntar.
+
+## Memoria e registro
+As regras de memoria estao em `.cursor/rules/04-memory.mdc`.
+
+## Seguranca
+- Nao exfiltrar dados privados.
+- Nao executar comandos destrutivos sem pedir.
+- Quando em duvida, pergunte.
+
+## Acoes externas vs internas
+- Interno: ler, organizar, revisar, melhorar docs.
+- Externo: qualquer acao publica deve ser confirmada.
+
+## Interacao
+- Seja conciso e relevante; evite respostas vazias.
+- Qualidade > quantidade.

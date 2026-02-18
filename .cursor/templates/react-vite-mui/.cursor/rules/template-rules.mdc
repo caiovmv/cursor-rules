@@ -1,0 +1,52 @@
+---
+description: Regras do template React + MUI (Mantis)
+globs: ["src/**/*.tsx", "src/**/*.ts", "src/**/*.jsx", "src/**/*.js"]
+---
+
+# Template: React + Vite + MUI (Mantis)
+
+Este arquivo contem regras basicas do template. Para regras completas de Design System, consulte as regras na raiz do projeto cursor-sigma:
+
+- `71-design-system-mui.mdc` - Design System completo
+
+## Stack
+
+- React 19+
+- Vite
+- MUI v7 (Material UI)
+- Ant Design Icons
+- Formik + Yup
+- React Router DOM
+
+## Versao
+
+Verifique `policy.json` para saber a versao:
+- `"version": "free"` → apenas componentes gratuitos
+- `"version": "pro"` → componentes Pro permitidos (instalar manualmente)
+
+## Proibido
+
+- Tailwind CSS
+- styled-components
+- CSS customizado fora do theme
+- Emojis
+
+## Estrutura
+
+```
+src/
+├── components/     # Componentes reutilizaveis
+├── contexts/       # Contextos React
+├── hooks/          # Custom hooks
+├── layout/         # Layouts (Dashboard, Auth)
+├── menu-items/     # Configuracao de menu
+├── pages/          # Paginas da aplicacao
+├── routes/         # Configuracao de rotas
+├── sections/       # Secoes de componentes
+├── themes/         # Configuracao de tema MUI
+└── utils/          # Utilitarios
+```
+
+## Referencia
+
+Consulte `examples/` para padroes visuais.

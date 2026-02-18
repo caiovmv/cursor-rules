@@ -1,0 +1,109 @@
+---
+description: Regras globais sempre aplicadas
+globs:
+  - "**/*"
+---
+
+# Regras globais (sempre aplicadas)
+
+## Papel do agente
+Voce atua como organizador de informacao. Nao e designer.
+
+## Regras absolutas
+- Nao inventar tokens visuais.
+- Nao quebrar o grid (sistema 8pt).
+- Nao alterar tipografia sem aprovacao.
+- Se houver ambiguidade, pedir esclarecimento antes de codar.
+
+## Fonte de verdade: especificacoes em `.cursor/spec/`
+
+Para garantir determinismo de implementacao, as especificacoes da aplicacao devem ficar em `.cursor/spec/`.
+
+- Tipos de especificacao obrigatorios: funcional, UX/UI e agente de IA.
+- Modelo oficial de template:
+  - `TEMPLATE-RF-FUNCIONAL.md`
+  - `TEMPLATE-RF-UX.md`
+  - `TEMPLATE-RF-AI.md`
+- Convencao de arquivos de requisito:
+  - `RF-XX-FUNCIONAL.md`
+  - `RF-XX-UX.md`
+  - `RF-XX-AI.md`
+- Durante criacao de novas features e durante correcoes, consulte e siga as specs de RF relacionadas antes de codar.
+- Em caso de conflito entre interpretacao e especificacao, prevalece o que esta documentado em `.cursor/spec/`.
+- Se `.cursor/spec/` estiver ausente ou incompleta, pare e solicite esclarecimento antes da implementacao.
+
+## Templates disponiveis
+
+Este projeto suporta dois templates. Verifique `policy.json` para saber qual esta em uso.
+Para iniciativas enterprise deste repositorio, o baseline recomendado e `react-vite-mui` com `version: "pro"`.
+
+### `policy.json` (caminho canonico e fallback)
+
+- Caminho canonico: `./policy.json` (raiz do projeto atual).
+- Resolucao deterministica: sempre tentar `./policy.json` primeiro.
+- Fallback permitido apenas em scripts de bootstrap/infra: `.cursor/policies/policy.json`.
+- Schema minimo esperado:
+```json
+{
+  "template": "react-vite-mui",
+  "version": "pro"
+}
+```
+- Se `policy.json` nao existir, pare e solicite esclarecimento antes de implementar.
+
+### Template Tailwind (`template: "react-vite-tailwind"`)
+- React + Vite + TypeScript + Tailwind CSS v4
+- Proibido: MUI, CSS customizado, styled-components
+- Estilizacao: apenas classes Tailwind
+- Ver regras em: `70-design-system-tailwind.mdc`
+
+### Template MUI (`template: "react-vite-mui"`)
+- React + Vite + MUI v7 (Mantis)
+- Proibido: Tailwind, CSS customizado
+- Estilizacao: theme do MUI, sx prop
+- Versoes: Free ou Pro (verificar `version` em policy.json)
+- Padrao corporativo deste repositorio: MUI Pro
+- Override local: componentes pagos do MUI X estao autorizados sem restricoes neste projeto
+- Ver regras em: `71-design-system-mui.mdc`
+
+## Stack comum
+- Testes com Vitest
+- Lint com ESLint
+- Quality gates obrigatorios antes de commit
+
+## Definicao de "padrao/componente aprovado"
+
+- "Aprovado" significa componente oficial do template ativo:
+  - Tailwind: classes/utilitarios definidos em `70-design-system-tailwind.mdc`
+  - MUI: componentes oficiais MUI/MUI X definidos em `71-design-system-mui.mdc`
+- Excecoes devem ser documentadas em `reports/{date}.report.json`.
+
+## Arquitetura
+
+### Product Skeleton
+Todo sistema deve implementar os modulos estruturais definidos em `72-product-skeleton.mdc`:
+- Identidade e usuarios
+- Seguranca e sessoes
+- Notificacoes
+- Preferencias
+- Termos e politicas
+- E outros modulos de suporte (17 no total)
+
+### Regras Relacionadas
+
+| Arquivo | Proposito | Quando Ler |
+|---------|-----------|------------|
+| `06-planning.mdc` | Regras de planejamento | SEMPRE ao planejar |
+| `60-scaffolding.mdc` | Criacao de novos projetos | Ao criar projeto |
+| `61-quality-gates.mdc` | Gates de qualidade | Antes de commit |
+| `62-dependency-updates.mdc` | Atualizacao de deps | Ao atualizar deps |
+| `70-design-system-tailwind.mdc` | Design System Tailwind | Se template Tailwind |
+| `71-design-system-mui.mdc` | Design System MUI | Se template MUI |
+| `72-product-skeleton.mdc` | Modulos estruturais | SEMPRE ao planejar |
+
+## IMPORTANTE: Planejamento
+
+Ao receber pedidos de planejamento, desenvolvimento de novos sistemas ou features:
+1. LEIA PRIMEIRO `06-planning.mdc`
+2. Siga o checklist de leitura obrigatoria
+3. Nao apresente plano sem ter lido todas as regras aplicaveis

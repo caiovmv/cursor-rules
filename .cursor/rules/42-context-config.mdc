@@ -1,0 +1,12 @@
+---
+description: Regras para configuracoes
+globs:
+  - "**/src/config/**/*.{ts,tsx,js,jsx}"
+  - "**/*.env*"
+---
+
+# Configuracoes (por contexto)
+
+- Centralize configs e flags.
+- Evite segredos em arquivos versionados.
+- Documente variaveis obrigatorias.

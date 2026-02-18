@@ -1,0 +1,12 @@
+---
+description: Regras para contexts e providers
+globs:
+  - "**/src/contexts/**/*.{ts,tsx,js,jsx}"
+  - "**/src/providers/**/*.{ts,tsx,js,jsx}"
+---
+
+# Contexts e providers (por contexto)
+
+- Mantenha contexts pequenos e focados.
+- Evite context global sem necessidade real.
+- Separe providers por dominio.

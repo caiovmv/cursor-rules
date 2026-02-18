@@ -1,0 +1,10 @@
+---
+description: Regras para testes
+globs:
+  - "**/*.{test,spec}.{ts,tsx,js,jsx}"
+---
+
+# Testes (por contexto)
+
+- Use Vitest para novos testes.
+- Garanta cobertura do fluxo principal afetado.

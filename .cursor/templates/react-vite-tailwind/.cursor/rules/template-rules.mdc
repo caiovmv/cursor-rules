@@ -1,0 +1,52 @@
+---
+description: Regras do template React + Tailwind
+globs: ["src/**/*.tsx", "src/**/*.ts"]
+---
+
+# Template: React + Vite + Tailwind CSS v4
+
+Este arquivo contem regras basicas do template. Para regras completas de Design System, consulte as regras na raiz do projeto cursor-sigma:
+
+- `70-design-system-tailwind.mdc` - Design System completo
+
+## Stack
+
+- React 19+
+- Vite
+- TypeScript
+- Tailwind CSS v4
+
+## Proibido
+
+- MUI, Ant Design
+- styled-components, emotion
+- CSS customizado
+- Estilos inline
+
+## Estrutura
+
+```
+src/
+├── components/     # Componentes reutilizaveis
+├── pages/          # Paginas da aplicacao
+├── hooks/          # Custom hooks
+├── utils/          # Funcoes utilitarias
+├── types/          # Tipos TypeScript
+├── constants/      # Constantes
+├── contexts/       # Contextos React
+├── layouts/        # Layouts de pagina
+├── features/       # Features/modulos
+├── lib/            # Bibliotecas/integracoes
+├── services/       # Servicos (API, etc)
+├── state/          # Gerenciamento de estado
+├── providers/      # Providers React
+├── styles/         # Estilos globais (Tailwind)
+└── assets/         # Arquivos estaticos
+```
+
+## Padroes
+
+- Componentes funcionais com TypeScript
+- Props tipadas com `type` ou `interface`
+- Um componente por arquivo
+- Nomes em PascalCase

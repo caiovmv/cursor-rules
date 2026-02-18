@@ -1,0 +1,16 @@
+{
+  "name": "react-vite-mui",
+  "version": "1.0.0",
+  "channel": "enterprise",
+  "defaultPolicy": "mui-pro",
+  "supportedPolicyVersions": [
+    "free",
+    "pro"
+  ],
+  "includes": {
+    "qualityGates": true,
+    "ciWorkflow": true,
+    "kubernetesDeploy": true,
+    "productSkeleton": true
+  }
+}

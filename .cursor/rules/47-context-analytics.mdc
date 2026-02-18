@@ -1,0 +1,11 @@
+---
+description: Regras para analytics
+globs:
+  - "**/src/analytics/**/*.{ts,tsx,js,jsx}"
+---
+
+# Analytics (por contexto)
+
+- Centralize eventos e nomes de evento.
+- Evite chamadas diretas na UI.
+- Padronize payloads para analise.

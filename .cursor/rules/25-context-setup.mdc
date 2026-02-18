@@ -1,0 +1,21 @@
+---
+description: Regras para setup de projeto e configs
+globs:
+  - "**/package.json"
+  - "**/vite.config.*"
+  - "**/tailwind.config.*"
+  - "**/postcss.config.*"
+  - "**/index.html"
+---
+
+# Setup de projeto (por contexto)
+
+- Verifique `policy.json` antes de aplicar regras de setup.
+- Se `template: "react-vite-tailwind"`:
+  - Stack: React + Vite + Tailwind v4
+  - Garanta que o Tailwind escaneie `./index.html` e `./src/**/*.{js,ts,jsx,tsx}`
+  - Evite CSS customizado; use classes utilitarias
+- Se `template: "react-vite-mui"`:
+  - Stack: React + Vite + MUI
+  - Use tema MUI em `src/themes/` e `sx`/theming no lugar de Tailwind
+- Se adicionar dependencias, registre no `reports/{date}.report.json`.

@@ -1,0 +1,11 @@
+---
+description: Regras para icones
+globs:
+  - "**/src/icons/**/*.{ts,tsx,js,jsx,svg}"
+---
+
+# Icones (por contexto)
+
+- Prefira SVGs otimizados.
+- Evite inline styles nos SVGs.
+- Reuse icones existentes.

@@ -1,0 +1,73 @@
+---
+description: Regras para criação de novos projetos via scaffolding
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Scaffolding de Novos Projetos
+
+Quando o usuário pedir para criar um novo projeto, sistema, aplicação ou dashboard, você DEVE usar o script de scaffolding.
+
+## Quando Usar
+
+Detecte pedidos como:
+- "Crie um novo projeto chamado X"
+- "Quero criar um sistema de Y"
+- "Inicie um novo app"
+- "Crie um dashboard para Z"
+- "Novo projeto com MUI/Tailwind"
+
+## Fluxo Obrigatório
+
+1. **Pergunte ao usuário** (se não especificado):
+   - Nome do projeto
+   - Template: `tailwind` ou `mui`
+   - Versão (se MUI): `free` ou `pro`
+
+2. **Execute o script de scaffolding**:
+
+   PowerShell (Windows):
+   ```powershell
+   .\scripts\create-project.ps1 -AppName "<nome>" -Template "<template>" -Version "<versao>"
+   ```
+
+   Bash (Linux/Mac):
+   ```bash
+   ./scripts/create-project.sh "<nome>" "." "<template>" "<versao>"
+   ```
+
+3. **Após criar o projeto**:
+   - Navegue até a pasta do projeto
+   - Execute `npm install`
+   - Informe ao usuário os próximos passos
+
+## Templates Disponíveis
+
+### tailwind (React + Vite + Tailwind CSS v4)
+- TypeScript
+- Estrutura minimalista
+- Para projetos customizados
+
+### mui (React + Vite + MUI - Mantis)
+- JavaScript
+- Dashboard completo
+- Componentes prontos
+- Versões: `free` (componentes gratuitos) ou `pro` (requer licença)
+
+## Exemplo de Interação
+
+**Usuário**: "Crie um dashboard para gestão de vendas"
+
+**Agente**:
+1. Pergunta: "Qual nome do projeto? Qual template (tailwind/mui)?"
+2. Usuário responde: "vendas-dashboard, mui free"
+3. Agente executa: `.\scripts\create-project.ps1 -AppName vendas-dashboard -Template mui -Version free`
+4. Agente executa: `cd vendas-dashboard && npm install`
+5. Agente informa: "Projeto criado! Consulte examples/ para referência."
+
+## Importante
+
+- NUNCA crie a estrutura de pastas manualmente
+- SEMPRE use o script de scaffolding
+- O script já configura: .gitignore, Cursor Rules, políticas, docs, reports
+- Após scaffolding, siga as regras do template em `.cursor/rules/template-rules.mdc`

@@ -1,0 +1,14 @@
+{
+  "ruleset": "cursor-enterprise-governance",
+  "version": "1.0.0",
+  "releaseDate": "2026-02-18",
+  "compatibility": {
+    "cursorRules": ">=0.45",
+    "node": ">=22"
+  },
+  "notes": [
+    "Baseline MUI Pro definido como recomendacao enterprise",
+    "Quality gates endurecidos com report automatico e schema validation",
+    "Skeleton gate e pipelines CI/Kubernetes adicionados"
+  ]
+}

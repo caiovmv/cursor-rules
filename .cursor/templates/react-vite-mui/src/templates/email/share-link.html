@@ -1,0 +1,67 @@
+<!--
+  Template: Share Link
+  Variaveis:
+    - {{app_name}}: Nome da aplicacao
+    - {{sharer_name}}: Nome de quem compartilhou
+    - {{sharer_email}}: Email de quem compartilhou
+    - {{content_title}}: Titulo do conteudo
+    - {{content_description}}: Descricao do conteudo (opcional)
+    - {{share_link}}: Link de acesso
+    - {{permission}}: Tipo de permissao (Visualizacao, Edicao)
+    - {{expiration}}: Data/hora de expiracao
+    - {{message}}: Mensagem personalizada (opcional)
+    - {{current_year}}: Ano atual
+-->
+<div class="header">
+  <h1>{{app_name}}</h1>
+</div>
+
+<div class="content">
+  <h2>Conteudo compartilhado com voce</h2>
+  
+  <p>Ola,</p>
+  
+  <p><strong>{{sharer_name}}</strong> ({{sharer_email}}) compartilhou um conteudo com voce:</p>
+  
+  <div class="info-box">
+    <p style="margin: 0; font-weight: 600; font-size: 16px;">{{content_title}}</p>
+    {{#if content_description}}
+    <p style="margin: 8px 0 0 0; font-size: 14px; color: #595959;">{{content_description}}</p>
+    {{/if}}
+  </div>
+  
+  <table class="info-table">
+    <tr>
+      <td>Permissao:</td>
+      <td>{{permission}}</td>
+    </tr>
+    <tr>
+      <td>Expira em:</td>
+      <td>{{expiration}}</td>
+    </tr>
+  </table>
+  
+  {{#if message}}
+  <div class="info-box" style="background-color: #e6f4ff; border-left: 3px solid #1677ff;">
+    <p style="margin: 0; font-style: italic; font-size: 14px;">
+      "{{message}}"
+    </p>
+    <p style="margin: 8px 0 0 0; font-size: 12px; color: #8c8c8c;">
+      - {{sharer_name}}
+    </p>
+  </div>
+  {{/if}}
+  
+  <p style="text-align: center; margin: 32px 0;">
+    <a href="{{share_link}}" class="button">Acessar Conteudo</a>
+  </p>
+  
+  <p style="font-size: 13px; color: #8c8c8c;">
+    Este link de acesso expira em <strong>{{expiration}}</strong>. Apos esse periodo, voce precisara solicitar um novo compartilhamento.
+  </p>
+</div>
+
+<div class="footer">
+  <p>{{app_name}} - {{current_year}}</p>
+  <p>Este e-mail foi enviado automaticamente. Por favor, nao responda.</p>
+</div>

@@ -1,0 +1,41 @@
+name: Quality Gates
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate quality report
+        run: node .cursor/scripts/generate-report.js
+
+      - name: Validate rules consistency
+        run: node .cursor/scripts/validate-rules.js
+
+      - name: Run policy gate
+        run: node .cursor/scripts/policy-check.js --scan-imports
+
+      - name: Run lint gate
+        run: node .cursor/scripts/lint-gate.js
+
+      - name: Run test gate
+        run: node .cursor/scripts/test-gate.js
+
+      - name: Run skeleton gate
+        run: node .cursor/scripts/validate-skeleton.js

@@ -1,0 +1,66 @@
+<!--
+  Template: Invite Member
+  Variaveis:
+    - {{app_name}}: Nome da aplicacao
+    - {{inviter_name}}: Nome de quem convidou
+    - {{inviter_email}}: Email de quem convidou
+    - {{workspace_name}}: Nome do workspace/organizacao
+    - {{role}}: Papel atribuido (Admin, Editor, Viewer)
+    - {{invite_link}}: Link para aceitar convite
+    - {{invite_expiration}}: Data/hora de expiracao do convite
+    - {{access_expiration}}: Duracao do acesso (opcional)
+    - {{message}}: Mensagem personalizada (opcional)
+    - {{current_year}}: Ano atual
+-->
+<div class="header">
+  <h1>{{app_name}}</h1>
+</div>
+
+<div class="content">
+  <h2>Voce foi convidado!</h2>
+  
+  <p>Ola,</p>
+  
+  <p><strong>{{inviter_name}}</strong> ({{inviter_email}}) convidou voce para participar de <strong>{{workspace_name}}</strong>.</p>
+  
+  <table class="info-table">
+    <tr>
+      <td>Papel atribuido:</td>
+      <td>{{role}}</td>
+    </tr>
+    <tr>
+      <td>Convite valido ate:</td>
+      <td>{{invite_expiration}}</td>
+    </tr>
+    {{#if access_expiration}}
+    <tr>
+      <td>Duracao do acesso:</td>
+      <td>{{access_expiration}}</td>
+    </tr>
+    {{/if}}
+  </table>
+  
+  {{#if message}}
+  <div class="info-box">
+    <p style="margin: 0; font-style: italic; font-size: 14px;">
+      "{{message}}"
+    </p>
+    <p style="margin: 8px 0 0 0; font-size: 12px; color: #8c8c8c;">
+      - {{inviter_name}}
+    </p>
+  </div>
+  {{/if}}
+  
+  <p style="text-align: center; margin: 32px 0;">
+    <a href="{{invite_link}}" class="button">Aceitar Convite</a>
+  </p>
+  
+  <p style="font-size: 13px; color: #8c8c8c;">
+    Se voce nao esperava este convite, pode ignorar este e-mail com seguranca.
+  </p>
+</div>
+
+<div class="footer">
+  <p>{{app_name}} - {{current_year}}</p>
+  <p>Este e-mail foi enviado automaticamente. Por favor, nao responda.</p>
+</div>

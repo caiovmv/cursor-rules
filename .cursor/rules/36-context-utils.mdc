@@ -1,0 +1,11 @@
+---
+description: Regras para utils
+globs:
+  - "**/src/utils/**/*.{ts,tsx,js,jsx}"
+---
+
+# Utils (por contexto)
+
+- Funcoes pequenas, puras e reutilizaveis.
+- Evite efeitos colaterais.
+- Prefira nomes descritivos e padrao consistente.

@@ -1,0 +1,11 @@
+---
+description: Regras para utilitarios e lib
+globs:
+  - "**/src/lib/**/*.{ts,tsx,js,jsx}"
+---
+
+# Lib e utilitarios (por contexto)
+
+- Crie funcoes pequenas e bem nomeadas.
+- Evite dependencias novas sem justificativa.
+- Prefira utilitarios puros e testaveis.

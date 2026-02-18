@@ -1,0 +1,808 @@
+---
+description: Modulos Estruturais Obrigatorios - Product Skeleton
+globs:
+  - "**/*.{tsx,jsx,ts,js}"
+---
+
+# Product Skeleton — Modulos Estruturais Obrigatorios
+
+> Os modulos abaixo sempre existem em qualquer sistema.
+> Eles nao fazem parte do core funcional, mas sustentam o produto.
+> O core muda. A estrutura permanece.
+
+---
+
+## Verificacao de Versao
+
+Antes de implementar, verifique `policy.json`:
+- `"version": "free"` → usar alternativas Free para componentes Paid
+- `"version": "pro"` → pode usar DataGrid Pro, DateRangePicker, etc.
+- Override local: em projetos MUI deste workspace, componentes MUI X pagos podem ser usados sem restricao (ver `71-design-system-mui.mdc`).
+
+---
+
+## 1. Identidade, Usuarios e Colaboracao
+
+### Funcionalidades
+- Convite de membros (estilo GitLab)
+- Papeis e permissoes
+- Estados (ativo, pendente, suspenso)
+
+### Convite de Membro (detalhado)
+
+Fluxo similar ao GitLab:
+
+| Campo | Descricao | Obrigatorio |
+|-------|-----------|-------------|
+| E-mail | E-mail do convidado | Sim |
+| Role | Papel atribuido (Admin, Editor, Viewer) | Sim |
+| Expiracao do Convite | Prazo para aceitar (7, 14, 30 dias) | Sim |
+| Validade da Permissao | Duracao do acesso (permanente, 30, 90, 180 dias) | Opcional |
+| Mensagem | Mensagem personalizada | Opcional |
+
+```
+Fluxo:
+1. Admin preenche formulario de convite
+2. Sistema envia e-mail com link de convite
+3. Convidado clica no link
+4. Se expirado → mensagem de erro
+5. Se valido → tela de aceite com detalhes do papel
+6. Apos aceite → usuario ativo com permissoes
+7. Se validade definida → acesso revogado automaticamente
+```
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| Dialog | Free |
+| TextField | Free |
+| Select | Free |
+| Chip | Free |
+| Autocomplete | Free |
+| DatePicker (expiracao) | **Pro** |
+| DataGrid Pro (lista) | **Pro** |
+
+### Alternativa Free
+- TextField type="date" para expiracao
+- Table + TablePagination para lista
+
+---
+
+## 2. Compartilhamento de Artefatos
+
+### Funcionalidades
+- Gerar link direto com permissao
+- Shortcuts de compartilhamento
+- Periodo de visibilidade com expiracao
+
+### Modos de Compartilhamento
+
+| Modo | Permissao | Expiracao Padrao |
+|------|-----------|------------------|
+| Visualizacao | read-only | 24 horas |
+| Edicao | read-write | 7 dias |
+| Permanente | configuravel | sem expiracao |
+
+### Shortcuts Disponiveis
+
+```
++------------------------------------------+
+|  Compartilhar                        [X] |
++------------------------------------------+
+|  Link gerado:                            |
+|  [https://app.com/share/abc123...]  [C]  |
++------------------------------------------+
+|  Enviar via:                             |
+|  [E-mail]  [WhatsApp]  [Copiar Link]     |
++------------------------------------------+
+|  Configuracoes:                          |
+|  Permissao: [Apenas visualizar v]        |
+|  Expira em: [24 horas v]                 |
++------------------------------------------+
+|  [Cancelar]              [Gerar Link]    |
++------------------------------------------+
+
+Legenda: [C] = botao copiar
+```
+
+### Opcoes de Expiracao
+- 1 hora
+- 24 horas (padrao)
+- 7 dias
+- 30 dias
+- Sem expiracao (apenas Pro)
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| Dialog | Free |
+| TextField (link) | Free |
+| IconButton (copiar) | Free |
+| Button (shortcuts) | Free |
+| Select (permissao) | Free |
+| Select (expiracao) | Free |
+| Switch (ativo/inativo) | Free |
+
+### Acoes dos Shortcuts
+
+```javascript
+// E-mail
+window.location.href = `mailto:?subject=Compartilhamento&body=${encodeURIComponent(link)}`;
+
+// WhatsApp
+window.open(`https://wa.me/?text=${encodeURIComponent(link)}`, '_blank');
+
+// Copiar Link
+navigator.clipboard.writeText(link);
+```
+
+---
+
+## 3. Templates de E-mail (HTML)
+
+### Estrutura de Pastas
+
+```
+src/
+├── templates/
+│   └── email/
+│       ├── base.html           # Layout base
+│       ├── reset-password.html # Reset de senha
+│       ├── invite-member.html  # Convite de membro
+│       ├── share-link.html     # Compartilhamento
+│       └── components/
+│           ├── header.html
+│           ├── footer.html
+│           └── button.html
+```
+
+### Template Base (base.html)
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{subject}}</title>
+  <style>
+    body { font-family: 'Public Sans', Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
+    .container { max-width: 600px; margin: 0 auto; background: #ffffff; }
+    .header { background: #1677ff; color: #ffffff; padding: 24px; text-align: center; }
+    .content { padding: 32px 24px; }
+    .footer { background: #f5f5f5; padding: 16px 24px; text-align: center; font-size: 12px; color: #8c8c8c; }
+    .button { display: inline-block; background: #1677ff; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    {{content}}
+  </div>
+</body>
+</html>
+```
+
+### Template: Reset Password
+
+```html
+<!-- reset-password.html -->
+<div class="header">
+  <h1>{{app_name}}</h1>
+</div>
+<div class="content">
+  <h2>Redefinir sua senha</h2>
+  <p>Ola {{user_name}},</p>
+  <p>Recebemos uma solicitacao para redefinir a senha da sua conta.</p>
+  <p>Clique no botao abaixo para criar uma nova senha:</p>
+  <p style="text-align: center; margin: 32px 0;">
+    <a href="{{reset_link}}" class="button">Redefinir Senha</a>
+  </p>
+  <p><strong>Este link expira em {{expiration_hours}} horas.</strong></p>
+  <p>Se voce nao solicitou esta alteracao, ignore este e-mail.</p>
+</div>
+<div class="footer">
+  <p>{{app_name}} - {{current_year}}</p>
+  <p>Este e-mail foi enviado automaticamente. Nao responda.</p>
+</div>
+```
+
+### Template: Convite de Membro
+
+```html
+<!-- invite-member.html -->
+<div class="header">
+  <h1>{{app_name}}</h1>
+</div>
+<div class="content">
+  <h2>Voce foi convidado!</h2>
+  <p>Ola,</p>
+  <p><strong>{{inviter_name}}</strong> convidou voce para participar de <strong>{{workspace_name}}</strong>.</p>
+  
+  <table style="width: 100%; margin: 24px 0; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0;"><strong>Papel:</strong></td>
+      <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0;">{{role}}</td>
+    </tr>
+    <tr>
+      <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0;"><strong>Validade do convite:</strong></td>
+      <td style="padding: 8px 0; border-bottom: 1px solid #f0f0f0;">{{invite_expiration}}</td>
+    </tr>
+    {{#if access_expiration}}
+    <tr>
+      <td style="padding: 8px 0;"><strong>Duracao do acesso:</strong></td>
+      <td style="padding: 8px 0;">{{access_expiration}}</td>
+    </tr>
+    {{/if}}
+  </table>
+  
+  {{#if message}}
+  <div style="background: #f5f5f5; padding: 16px; border-radius: 4px; margin: 24px 0;">
+    <p style="margin: 0; font-style: italic;">"{{message}}"</p>
+  </div>
+  {{/if}}
+  
+  <p style="text-align: center; margin: 32px 0;">
+    <a href="{{invite_link}}" class="button">Aceitar Convite</a>
+  </p>
+</div>
+<div class="footer">
+  <p>{{app_name}} - {{current_year}}</p>
+</div>
+```
+
+### Template: Compartilhamento
+
+```html
+<!-- share-link.html -->
+<div class="header">
+  <h1>{{app_name}}</h1>
+</div>
+<div class="content">
+  <h2>Conteudo compartilhado com voce</h2>
+  <p>Ola,</p>
+  <p><strong>{{sharer_name}}</strong> compartilhou um conteudo com voce:</p>
+  
+  <div style="background: #f5f5f5; padding: 16px; border-radius: 4px; margin: 24px 0;">
+    <p style="margin: 0;"><strong>{{content_title}}</strong></p>
+    <p style="margin: 8px 0 0 0; font-size: 14px; color: #8c8c8c;">{{content_description}}</p>
+  </div>
+  
+  <table style="width: 100%; margin: 24px 0;">
+    <tr>
+      <td><strong>Permissao:</strong></td>
+      <td>{{permission}}</td>
+    </tr>
+    <tr>
+      <td><strong>Expira em:</strong></td>
+      <td>{{expiration}}</td>
+    </tr>
+  </table>
+  
+  <p style="text-align: center; margin: 32px 0;">
+    <a href="{{share_link}}" class="button">Acessar Conteudo</a>
+  </p>
+</div>
+<div class="footer">
+  <p>{{app_name}} - {{current_year}}</p>
+</div>
+```
+
+---
+
+## 4. Upload e Arquivos
+
+### Funcionalidades
+- Drag and drop
+- Upload multiplo
+- Progresso
+- Erros claros
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| Box (Dropzone) | Free |
+| Button | Free |
+| LinearProgress | Free |
+| List | Free |
+| Alert | Free |
+
+---
+
+## 5. Chat com IA (Servico Transversal)
+
+### Funcionalidades
+- Historico persistente
+- Estados (digitando, erro, resposta)
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| Drawer | Free |
+| Paper | Free |
+| TextField | Free |
+| IconButton | Free |
+| Skeleton | Free |
+
+---
+
+## 6. Notificacoes e Atividades
+
+### Funcionalidades
+- Tempo real
+- Marcar como lida
+- Historico
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| Badge | Free |
+| Menu | Free |
+| List | Free |
+| Snackbar | Free |
+
+---
+
+## 7. Suporte e Atendimento
+
+### Funcionalidades
+- Abrir ticket
+- Categoria e prioridade
+- Status
+- Historico
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| Dialog | Free |
+| TextField | Free |
+| Select | Free |
+| Chip | Free |
+| DataGrid Pro | **Pro** |
+
+### Alternativa Free
+- Table + TablePagination
+
+---
+
+## 8. Ajuda e Onboarding
+
+### Funcionalidades
+- FAQ
+- Ajuda contextual
+- Empty states inteligentes
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| Accordion | Free |
+| Card | Free |
+| Typography | Free |
+
+---
+
+## 9. Auditoria e Observabilidade
+
+### Funcionalidades
+- Registro de acoes
+- Filtros avancados
+- Acoes negadas por seguranca
+
+### Filtros Disponiveis
+
+| Filtro | Tipo | Descricao |
+|--------|------|-----------|
+| Trilha de Auditoria | Select | Categoria do evento (auth, data, admin, billing) |
+| Evento/Acao | Autocomplete | Acao especifica (login, create, update, delete) |
+| Periodo | DateRangePicker | Data inicio e fim |
+| Usuario | Autocomplete | Filtrar por usuario |
+| Status | Select | Sucesso, Negado, Erro |
+
+### Estrutura do Log de Auditoria
+
+```typescript
+interface AuditLog {
+  id: string;
+  timestamp: Date;
+  trail: 'auth' | 'data' | 'admin' | 'billing' | 'security';
+  action: string;
+  actor: {
+    id: string;
+    name: string;
+    email: string;
+    ip: string;
+  };
+  resource: {
+    type: string;
+    id: string;
+    name: string;
+  };
+  status: 'success' | 'denied' | 'error';
+  denialReason?: string;  // Se status = 'denied'
+  details: Record<string, unknown>;
+}
+```
+
+### Trilhas de Auditoria
+
+| Trilha | Eventos |
+|--------|---------|
+| auth | login, logout, password_reset, mfa_enabled |
+| data | create, read, update, delete, export |
+| admin | user_invited, role_changed, user_suspended |
+| billing | plan_changed, payment_processed, invoice_generated |
+| security | access_denied, permission_denied, rate_limited |
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| DataGrid Pro | **Pro** |
+| DateRangePicker | **Pro** |
+| Autocomplete | Free |
+| Select | Free |
+| Chip (status) | Free |
+
+### Alternativa Free
+- Table com filtros manuais
+- Dois TextField type="date" para range
+
+---
+
+## 10. Preferencias Globais
+
+### Funcionalidades
+- Tema (claro/escuro)
+- Idioma
+- Teclas de atalho
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| Switch | Free |
+| Select | Free |
+| List | Free |
+
+---
+
+## 11. Seguranca e Sessoes
+
+### Funcionalidades
+- Sessoes ativas
+- Encerrar sessao remota
+- Reautenticacao
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| Dialog | Free |
+| List | Free |
+| Button color="error" | Free |
+
+---
+
+## 12. Opt-ins e Opt-outs
+
+### Funcionalidades
+- Consentimento explicito
+- Opt-out a qualquer momento
+- Historico
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| Dialog | Free |
+| Checkbox | Free |
+| Accordion | Free |
+
+---
+
+## 13. Data Privacy (LGPD / GDPR)
+
+### Funcionalidades
+- Visualizar dados pessoais
+- Exportar dados
+- Anonimizar
+- Excluir conta
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| DataGrid Pro | **Pro** |
+| Dialog | Free |
+| Alert | Free |
+
+### Alternativa Free
+- Table para exibir dados
+
+---
+
+## 14. Termos, Licencas e Politicas
+
+### Funcionalidades
+- Aceite explicito
+- Versionamento
+- Reaceite obrigatorio
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| Dialog (bloqueante) | Free |
+| Typography | Free |
+| Checkbox | Free |
+
+---
+
+## 15. Licenciamento e Limites
+
+### Funcionalidades
+- Matriz de planos x features x quotas
+- Precos inclusos e adicionais
+- Indicadores de uso
+- Avisos de limite
+
+### Matriz de Planos
+
+```typescript
+interface Plan {
+  id: string;
+  name: string;           // Free, Starter, Pro, Enterprise
+  price: {
+    monthly: number;
+    yearly: number;       // desconto anual
+    currency: 'BRL' | 'USD';
+  };
+  features: PlanFeature[];
+  quotas: PlanQuota[];
+  addons: PlanAddon[];
+}
+
+interface PlanFeature {
+  id: string;
+  name: string;
+  included: boolean;
+}
+
+interface PlanQuota {
+  id: string;
+  name: string;           // Usuarios, Storage, API calls
+  limit: number | 'unlimited';
+  unit: string;           // 'users', 'GB', 'requests/month'
+}
+
+interface PlanAddon {
+  id: string;
+  name: string;
+  price: number;
+  unit: string;           // 'per user', 'per GB', 'per 1000 requests'
+}
+```
+
+### Exemplo de Matriz
+
+| Feature/Quota | Free | Starter | Pro | Enterprise |
+|---------------|------|---------|-----|------------|
+| Usuarios | 3 | 10 | 50 | Ilimitado |
+| Storage | 1 GB | 10 GB | 100 GB | Ilimitado |
+| API calls/mes | 1.000 | 10.000 | 100.000 | Ilimitado |
+| Suporte | Email | Email | Prioritario | Dedicado |
+| SSO | - | - | Sim | Sim |
+| Auditoria | - | Basica | Completa | Completa |
+| Preco/mes | R$ 0 | R$ 49 | R$ 199 | Sob consulta |
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| Card | Free |
+| Chip | Free |
+| Alert | Free |
+| LinearProgress | Free |
+| Table | Free |
+| Typography | Free |
+
+---
+
+## 16. Billing e Faturamento
+
+### Funcionalidades
+- Demonstrativo de custos mensal
+- Status de faturas
+- Historico de pagamentos
+- Metodos de pagamento
+
+### Demonstrativo Mensal
+
+```typescript
+interface BillingStatement {
+  id: string;
+  period: {
+    start: Date;
+    end: Date;
+  };
+  items: BillingItem[];
+  subtotal: number;
+  taxes: number;
+  total: number;
+  currency: 'BRL' | 'USD';
+  status: 'pending' | 'paid' | 'overdue' | 'cancelled';
+  dueDate: Date;
+  paidAt?: Date;
+}
+
+interface BillingItem {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+  type: 'plan' | 'addon' | 'overage';
+}
+```
+
+### Status de Fatura
+
+| Status | Cor (Chip) | Acao |
+|--------|------------|------|
+| Pendente | warning | Aguardando pagamento |
+| A vencer | info | Proximo do vencimento |
+| Paga | success | Nenhuma |
+| Atrasada | error | Cobrar + bloquear features |
+| Cancelada | default | Nenhuma |
+
+### Metodos de Pagamento
+
+| Metodo | Provedor | Campos |
+|--------|----------|--------|
+| Cartao de Credito | Stripe | Numero, Validade, CVV, Nome |
+| Boleto | Stripe | CPF/CNPJ, Nome |
+
+### Componentes
+| Componente | Versao |
+|------------|--------|
+| Card | Free |
+| Table | Free |
+| Chip (status) | Free |
+| Alert | Free |
+| Dialog | Free |
+| TextField | Free |
+| Button | Free |
+
+---
+
+## 17. Pagamentos (Stripe)
+
+### Integracao Padrao
+
+Usar Stripe como gateway de pagamento.
+
+### Fluxo de Pagamento
+
+```
+1. Usuario seleciona plano
+2. Frontend cria PaymentIntent via API
+3. Stripe Elements renderiza formulario
+4. Usuario preenche dados
+5. Stripe processa pagamento
+6. Webhook confirma pagamento
+7. Sistema ativa plano
+```
+
+### Webhooks Stripe
+
+| Evento | Acao |
+|--------|------|
+| payment_intent.succeeded | Ativar plano, registrar pagamento |
+| payment_intent.payment_failed | Notificar usuario, manter plano atual |
+| invoice.paid | Atualizar status da fatura |
+| invoice.payment_failed | Notificar, tentar novamente |
+| customer.subscription.updated | Atualizar plano |
+| customer.subscription.deleted | Downgrade para Free |
+
+### Componentes para Checkout
+
+```jsx
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+
+// Cartao de Credito
+<CardElement options={{
+  style: {
+    base: {
+      fontSize: '16px',
+      color: '#424770',
+    },
+  },
+}} />
+
+// Boleto
+// Usar PaymentElement com payment_method_types: ['boleto']
+```
+
+### Seguranca
+
+- NUNCA armazenar dados de cartao
+- Usar apenas tokens Stripe
+- Validar webhooks com assinatura
+- PCI DSS compliance via Stripe
+
+---
+
+## Antipadroes
+
+1. Emojis em UI ou codigo
+2. Recriar componentes MUI existentes
+3. CSS fora do theme
+4. Feature sem governanca (sem registro em reports/)
+5. Misturar core funcional com estrutura
+6. Ignorar regras de licenciamento definidas no template ativo
+7. Armazenar dados sensiveis de pagamento
+8. Ignorar webhooks de pagamento
+
+---
+
+## Estrutura de Pastas Completa
+
+```
+src/
+├── features/
+│   ├── identity/          # Usuarios, convites, papeis
+│   ├── sharing/           # Compartilhamento
+│   ├── upload/            # Upload de arquivos
+│   ├── ai-chat/           # Chat com IA
+│   ├── notifications/     # Notificacoes
+│   ├── support/           # Suporte e tickets
+│   ├── help/              # Ajuda e onboarding
+│   ├── audit/             # Auditoria
+│   ├── preferences/       # Preferencias globais
+│   ├── security/          # Seguranca e sessoes
+│   ├── consent/           # Opt-ins e opt-outs
+│   ├── privacy/           # LGPD/GDPR
+│   ├── terms/             # Termos e politicas
+│   ├── licensing/         # Licenciamento e limites
+│   ├── billing/           # Faturamento
+│   └── payments/          # Pagamentos (Stripe)
+├── templates/
+│   └── email/
+│       ├── base.html
+│       ├── reset-password.html
+│       ├── invite-member.html
+│       ├── share-link.html
+│       └── components/
+```
+
+---
+
+## Ordem de Implementacao Sugerida
+
+### Fase 1: Fundacao
+1. Identidade e Usuarios
+2. Seguranca e Sessoes
+3. Termos e Politicas
+
+### Fase 2: Operacional
+4. Preferencias Globais
+5. Notificacoes
+6. Ajuda e Onboarding
+
+### Fase 3: Colaboracao
+7. Compartilhamento
+8. Upload e Arquivos
+
+### Fase 4: Monetizacao
+9. Licenciamento
+10. Billing
+11. Pagamentos (Stripe)
+
+### Fase 5: Compliance
+12. Auditoria
+13. Data Privacy
+14. Opt-ins/Opt-outs
+
+### Fase 6: Extras
+15. Suporte
+16. Chat com IA
+
+---
+
+## Regra Final
+
+> O core muda. A estrutura permanece.
+> 
+> Este Product Skeleton define a base de qualquer sistema SaaS.
+> Qualquer projeto que o siga nasce pronto para escalar.

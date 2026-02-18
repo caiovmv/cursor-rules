@@ -1,0 +1,12 @@
+---
+description: Regras para tipos
+globs:
+  - "**/src/types/**/*.{ts,tsx,js,jsx}"
+  - "**/src/**/*.d.ts"
+---
+
+# Tipos (por contexto)
+
+- Centralize tipos compartilhados.
+- Evite tipos duplicados entre features.
+- Prefira tipos explicitos e legiveis.

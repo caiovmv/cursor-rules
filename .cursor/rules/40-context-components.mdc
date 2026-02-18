@@ -1,0 +1,11 @@
+---
+description: Regras para componentes
+globs:
+  - "**/src/components/**/*.{ts,tsx,js,jsx}"
+---
+
+# Componentes (por contexto)
+
+- Crie componentes pequenos e reutilizaveis.
+- Evite variacoes visuais novas; reuse padroes existentes.
+- Prefira props claras e poucos estados internos.

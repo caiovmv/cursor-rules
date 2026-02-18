@@ -1,0 +1,20 @@
+{
+  "template": "react-vite-tailwind",
+  "version": "free",
+  "rules": {
+    "tailwind_v4_required": true,
+    "custom_css_forbidden": true,
+    "inline_styles_forbidden": true,
+    "mui_forbidden": true,
+    "dependencies_require_justification": true
+  },
+  "forbidden_imports": [
+    "@mui/material",
+    "@mui/system",
+    "@mui/icons-material",
+    "styled-components",
+    "@emotion/styled",
+    "antd",
+    "@ant-design/icons"
+  ]
+}

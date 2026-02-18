@@ -1,0 +1,27 @@
+---
+description: Politica de governanca da IA
+globs:
+  - "**/*"
+---
+
+# Politica de governanca (sempre aplicavel)
+
+## Sistema de design imutavel
+- Escala tipografica fixa.
+- Grid 8pt/4pt fixo.
+- Tokens de espacamento predefinidos.
+- Paleta com contraste WCAG.
+- Componentes reutilizaveis aprovados.
+
+## Diretriz central
+- A IA organiza informacao; nao cria design.
+- Nao escolhe cores, fontes ou layouts.
+- Apenas instancia padroes aprovados.
+
+## Regras absolutas
+- As regras absolutas de UI e governanca base estao em `00-global.mdc` (fonte unica).
+- Nunca adicionar dependencias sem justificativa.
+- Se requisitos forem ambiguos, perguntar antes de codar.
+
+## Gates obrigatorios
+- Policy, Lint e Tests sao obrigatorios.

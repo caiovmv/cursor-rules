@@ -1,0 +1,12 @@
+---
+description: Regras para mocks
+globs:
+  - "**/src/mocks/**/*.{ts,tsx,js,jsx}"
+  - "**/mocks/**/*.{ts,tsx,js,jsx,json}"
+---
+
+# Mocks (por contexto)
+
+- Mocks devem refletir contratos reais.
+- Evite dados irreais ou inconsistentes.
+- Mantenha mocks simples e legiveis.

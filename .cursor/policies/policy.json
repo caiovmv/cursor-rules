@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "tailwind_v4_required": true,
+    "custom_css_forbidden": true,
+    "dependencies_require_justification": true
+  }
+}

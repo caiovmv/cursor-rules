@@ -1,0 +1,24 @@
+---
+description: Regras para features
+globs:
+  - "**/src/features/**/*.{ts,tsx,js,jsx}"
+---
+
+# Features (por contexto)
+
+## Organizacao
+
+- Organize por dominio (feature-first).
+- Isole estado e side effects da UI.
+- Evite duplicar logica entre features.
+
+## Modulos Estruturais
+
+Consulte `72-product-skeleton.mdc` para a lista de modulos estruturais obrigatorios:
+
+Estes modulos sustentam o produto e devem existir em qualquer sistema.
+
+## Core vs Estrutura
+
+- **Core**: Funcionalidades especificas do negocio (muda por produto)
+- **Estrutura**: Modulos do Product Skeleton (permanece igual)

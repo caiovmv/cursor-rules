@@ -1,0 +1,11 @@
+---
+description: Regras para layouts
+globs:
+  - "**/src/layouts/**/*.{ts,tsx,js,jsx}"
+---
+
+# Layouts (por contexto)
+
+- Mantenha layouts simples e previsiveis.
+- Evite logica de negocio em layouts.
+- Reutilize componentes estruturais aprovados.
